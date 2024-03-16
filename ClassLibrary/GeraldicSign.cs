@@ -8,9 +8,9 @@ public class GeraldicSign
     private string description;
     private string semantics;
     private string certificateHolderName;
-    private DateTime registrationDate;
+    private string registrationDate;
     private string registrationNumber;
-    private decimal global_id;
+    private string global_id;
     public GeraldicSign()
     {
         name = string.Empty;
@@ -19,13 +19,13 @@ public class GeraldicSign
         description = string.Empty;
         semantics = string.Empty;
         certificateHolderName = string.Empty;
-        registrationDate = DateTime.UtcNow;
+        registrationDate = string.Empty;
         registrationNumber = string.Empty;
-        global_id = -1;
+        global_id = string.Empty;
     }
     public GeraldicSign(string name, string type, string picture, string description,
-        string semantics, string certificateHolderName, DateTime registrationDate,
-        string registrationNumber, decimal global_id)
+        string semantics, string certificateHolderName, string registrationDate,
+        string registrationNumber, string global_id)
     {
         this.name = name;
         this.type = type;
@@ -45,9 +45,9 @@ public class GeraldicSign
         description = data[3];
         semantics = data[4];
         certificateHolderName = data[5];
-        registrationDate = DateTime.Parse(data[6]);
+        registrationDate = data[6];
         registrationNumber = data[7];
-        global_id = decimal.Parse(data[8]);
+        global_id = data[8];
     }
 
     [JsonPropertyName("Name")]
@@ -69,13 +69,13 @@ public class GeraldicSign
     public string CertificateHolderName => certificateHolderName;
 
     [JsonPropertyName("RegistrationDate")]
-    public DateTime RegistrationDate => registrationDate;
+    public string RegistrationDate => registrationDate;
 
     [JsonPropertyName("RegistrationNumber")]
     public string RegistrationNumber => registrationNumber;
 
     [JsonPropertyName("global_id")]
-    public decimal GlobalId => global_id;
+    public string GlobalId => global_id;
 
     public string ToJson()
     {

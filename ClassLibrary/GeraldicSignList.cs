@@ -1,7 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
-internal class GeraldicSignList
+public class GeraldicSignList: IEnumerable
 {
     private const int countOfHeaders = 9;
     private List<string> headersEng;
@@ -27,8 +27,9 @@ internal class GeraldicSignList
     public List<string> HeadersRus => headersRus;
 
     [JsonPropertyName("Data")]
-    public List<GeraldicSign> Data => data;
+    public List<GeraldicSign> Data { get; set; }
 
+    public IEnumerator GetEnumerator() => data.GetEnumerator();
     public string ToJson()
     {
         return JsonSerializer.Serialize(this);
