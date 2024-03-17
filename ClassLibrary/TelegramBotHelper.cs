@@ -1,10 +1,12 @@
-﻿using Telegram.Bot;
+﻿using System.Reflection.PortableExecutable;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 public class TelegramBotHelper
 {
     private string token;
-    static GeraldicSignList table;
+    private string pathFile;
+    private static GeraldicSignList table;
     TelegramBotClient client;
     public TelegramBotHelper(string token)
     {
@@ -33,7 +35,7 @@ public class TelegramBotHelper
             }
         );
     }
-    private async void ProcessUpdate(ITelegramBotClient botClient, Update update)
+    private async void ProcessUpdateAsync(ITelegramBotClient botClient, Update update)
     {
         switch (update.Type)
         {
@@ -41,46 +43,42 @@ public class TelegramBotHelper
                 var text = update.Message.Text;
                 if (table is null)
                 {
-                    switch (text)
+                    if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                     {
-                        case "Загрузить CSV файл":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить CSV файл", replyMarkup: GetInputButtons());
-                            break;
-
-                        case "Загрузить JSON файл":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить JSON файл", replyMarkup: GetInputButtons());
-                            break;
-
-                        default:
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());
-                            break;
+                        pathFile = await CSVProcessing.DownloadCsvFile(botClient, update);
+                        table = CSVProcessing.ReadCsvFile(pathFile, out List<int> bugs);
+                        await client.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: GetButtons());
+                        CSVProcessing.SaveCsvFile(botClient, update, table, pathFile);
+                    } else
+                    {
+                        await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());
                     }
+                    /* case "Загрузить JSON файл":
+                         await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить JSON файл", replyMarkup: GetInputButtons());
+                         break;
+
+                     default:
+                         await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());
+                         break;
+                     */
                 }
                 else
                 {
                     switch (text)
                     {
-                        case "Загрузить CSV файл":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить CSV файл", replyMarkup: GetButtons());
-                            break;
-
-                        case "Загрузить JSON файл":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить JSON файл", replyMarkup: GetButtons());
-                            break;
-
                         case "Фильтрация по Type":
                             await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по Type", replyMarkup: GetButtons());
-                            await FilteringData.FilterByOneCondition(botClient, update, "Type", table);
+                            await FilteringData.FilterByOneConditionAsync(botClient, update, "Type", table);
                             break;
 
                         case "Фильтрация по RegistrationDate":
                             await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по RegistrationDate", replyMarkup: GetButtons());
-                            await FilteringData.FilterByOneCondition(botClient, update, "RegistrationDate", table);
+                            await FilteringData.FilterByOneConditionAsync(botClient, update, "RegistrationDate", table);
                             break;
 
                         case "Фильтрация по CertificateHolderName и RegistrationDate":
                             await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по CertificateHolderName и RegistrationDate", replyMarkup: GetButtons());
-                            await FilteringData.FilterByTwoConditions(botClient, update, "CertificateHolderName", "RegistrationDate", table);
+                            await FilteringData.FilterByTwoConditionsAsync(botClient, update, "CertificateHolderName", "RegistrationDate", table);
                             break;
 
                         case "Сортировка по возрастанию":
@@ -95,8 +93,8 @@ public class TelegramBotHelper
                             await client.SendTextMessageAsync(update.Message.Chat.Id, "Скачать обработанный файл в JSON", replyMarkup: GetButtons());
                             break;
 
-                        case "Скачать обработанный файл в CSV":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Скачать обработанный файл в CSV", replyMarkup: GetButtons());
+                        case "Скачать обработанный файл в СSV":
+                            await CSVProcessing.UploadCsvFile(botClient, update, pathFile);
                             break;
 
                         default:
@@ -129,7 +127,7 @@ public class TelegramBotHelper
                     {
                         foreach (var update in updates)
                         {
-                            ProcessUpdate(client, update);
+                            ProcessUpdateAsync(client, update);
                             offset = update.Id + 1;
                         }
                     }

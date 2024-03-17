@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.IO;
+using System.Numerics;
 using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using Telegram.Bot;
@@ -6,8 +9,6 @@ using Telegram.Bot.Types;
 internal class CSVProcessing
 {
     const string Separator = "\";\"";
-
-    // Удаление лишних символов из строки.
     private static string RemoveExtraCharacters(string line)
     {
         string answer = string.Empty;
@@ -20,14 +21,14 @@ internal class CSVProcessing
         }
         return answer;
     }
-
     private static List<string> DataCorrection(string[] data)
     {
         List<string> result = new List<string>();
-        foreach(string line in data)
+        foreach (string line in data)
         {
             string newLine = RemoveExtraCharacters(line);
-            if (result.Count < GeraldicSignList.CountOfHeaders) { 
+            if (result.Count < GeraldicSignList.CountOfHeaders)
+            {
                 result.Add(newLine);
             }
         }
@@ -41,7 +42,7 @@ internal class CSVProcessing
             {
                 continue;
             }
-            switch (i) 
+            switch (i)
             {
                 case 6:
                     if (!DateTime.TryParse(row[i], out DateTime _))
@@ -60,7 +61,7 @@ internal class CSVProcessing
         }
         return true;
     }
-    
+
     internal static GeraldicSignList ReadCsvFile(string destinationFilePath, out List<int> bugs)
     {
         GeraldicSignList table;
@@ -113,6 +114,26 @@ internal class CSVProcessing
 
         return table;
     }
+    internal static void SaveCsvFile(ITelegramBotClient botClient, Update update, GeraldicSignList table, string path)
+    {
+        if (path == null || path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+        {
+            Console.WriteLine("Путь указан некорректно");
+        }
+
+        using (var sw = new StreamWriter(path))
+        {
+            GeraldicSign headersEng = new GeraldicSign(table.HeadersEng);
+            GeraldicSign headersRus = new GeraldicSign(table.HeadersRus);
+
+            sw.WriteLine(headersEng.ToString());
+            sw.WriteLine(headersRus.ToString());
+            foreach (var elem in table.Data)
+            {
+                sw.WriteLine(elem.ToString());
+            }    
+        }
+    }
     internal static async Task<string> DownloadCsvFile(ITelegramBotClient botClient, Update update)
     {
         var fileId = update.Message.Document.FileId;
@@ -122,5 +143,13 @@ internal class CSVProcessing
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
         fileStream.Close();
         return destinationFilePath;
+    }
+
+    internal static async Task UploadCsvFile(ITelegramBotClient botClient, Update update, string path)
+    {
+        await using Stream stream = System.IO.File.OpenRead(path);
+        Message message = await botClient.SendDocumentAsync(
+            chatId: update.Message.Chat.Id,
+            document: InputFile.FromStream(stream: stream, fileName: $"table.csv"));
     }
 }
