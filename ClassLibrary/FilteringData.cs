@@ -40,20 +40,12 @@ public class FilteringData
         return infoCondition;
     }
 
-    public static async Task FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, List<GeraldicSign> table)
+    internal static async Task<List<GeraldicSign>> FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, List<GeraldicSign> table)
     {
-        if (update.Message is not { } message)
-            return;
-
-        if (message.Text is not { } messageText)
-            return;
-
-        var chatId = message.Chat.Id;
+        var chatId = update.Message.Chat.Id;
         string selection = await FindValueSelectionAsync(botClient, chatId, condition);
 
         List<GeraldicSign> newTable = new List<GeraldicSign>();
-        newTable.Add(table[0]); newTable.Add(table[1]);
-
         foreach (GeraldicSign row in table)
         {
             string infoCondition = FindInfoCondition(condition, row);
@@ -63,29 +55,26 @@ public class FilteringData
             }
         }
 
-        if (newTable.Count == 2)
+        if (newTable.Count == 0)
         {
             await botClient.SendTextMessageAsync(
                    chatId: chatId,
-                   text: "По данному значению не нашлось результатов :(");
-            return;
+                   text: "По данным значениям не нашлось результатов :(");
         }
-        return;
+        else
+        {
+            newTable.Insert(0, table[1]);
+            newTable.Insert(0, table[0]);
+        }
+        return newTable;
     }
-    public static async Task FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, List<GeraldicSign> table)
+    internal static async Task<List<GeraldicSign>> FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, List<GeraldicSign> table)
     {
-        if (update.Message is not { } message)
-            return;
-
-        if (message.Text is not { } messageText)
-            return;
-
-        var chatId = message.Chat.Id;
+        var chatId = update.Message.Chat.Id;
         string firstSelection = await FindValueSelectionAsync(botClient, chatId, firstCondition);
         string secondSelection = await FindValueSelectionAsync(botClient, chatId, secondCondition);
 
         List<GeraldicSign> newTable = new List<GeraldicSign>();
-        newTable.Add(table[0]); newTable.Add(table[1]);
 
         foreach (GeraldicSign row in table)
         {
@@ -97,13 +86,16 @@ public class FilteringData
             }
         }
 
-        if (newTable.Count == 2)
+        if (newTable.Count == 0)
         {
             await botClient.SendTextMessageAsync(
                    chatId: chatId,
                    text: "По данным значениям не нашлось результатов :(");
-            return;
+        } else
+        {
+            newTable.Insert(0, table[1]); 
+            newTable.Insert(0, table[0]);
         }
-        return;
+        return newTable;
     }
 }
