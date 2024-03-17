@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 public class FilteringData 
 {
-    private static async Task<string> FindValueSelection(ITelegramBotClient botClient, long chatId, string condition)
+    private static async Task<string> FindValueSelectionAsync(ITelegramBotClient botClient, long chatId, string condition)
     {
         string selection = string.Empty;
         while (true)
@@ -40,7 +40,7 @@ public class FilteringData
         return infoCondition;
     }
 
-    public static async Task FilterByOneCondition(ITelegramBotClient botClient, Update update, string condition, GeraldicSignList table)
+    public static async Task FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, GeraldicSignList table)
     {
         if (update.Message is not { } message)
             return;
@@ -49,7 +49,7 @@ public class FilteringData
             return;
 
         var chatId = message.Chat.Id;
-        string selection = await FindValueSelection(botClient, chatId, condition);
+        string selection = await FindValueSelectionAsync(botClient, chatId, condition);
 
         GeraldicSignList newTable = new GeraldicSignList(table.HeadersEng, table.HeadersRus, new List<GeraldicSign>(0));
         foreach (GeraldicSign row in table)
@@ -70,7 +70,7 @@ public class FilteringData
         }
         return;
     }
-    public static async Task FilterByTwoConditions(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, GeraldicSignList table)
+    public static async Task FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, GeraldicSignList table)
     {
         if (update.Message is not { } message)
             return;
@@ -79,8 +79,8 @@ public class FilteringData
             return;
 
         var chatId = message.Chat.Id;
-        string firstSelection = await FindValueSelection(botClient, chatId, firstCondition);
-        string secondSelection = await FindValueSelection(botClient, chatId, secondCondition);
+        string firstSelection = await FindValueSelectionAsync(botClient, chatId, firstCondition);
+        string secondSelection = await FindValueSelectionAsync(botClient, chatId, secondCondition);
 
         GeraldicSignList newTable = new GeraldicSignList(table.HeadersEng, table.HeadersRus, new List<GeraldicSign>());
         foreach (GeraldicSign row in table)
