@@ -12,22 +12,11 @@ public class TelegramBotHelper
     {
         this.token = token;
     }
-
-    private static IReplyMarkup? GetInputButtons()
-    {
-        return new ReplyKeyboardMarkup(
-            new List<List<KeyboardButton>>
-            {
-                new List<KeyboardButton> { new KeyboardButton("Загрузить CSV файл"), new KeyboardButton("Загрузить JSON файл") }
-            }
-        );
-    }
     private static IReplyMarkup? GetButtons()
     {
         return new ReplyKeyboardMarkup(
             new List<List<KeyboardButton>>
             {
-                new List<KeyboardButton> { new KeyboardButton("Загрузить CSV файл"), new KeyboardButton("Загрузить JSON файл")  },
                 new List<KeyboardButton> { new KeyboardButton("Фильтрация по Type"), new KeyboardButton("Фильтрация по RegistrationDate") },
                 new List<KeyboardButton> { new KeyboardButton("Фильтрация по CertificateHolderName и RegistrationDate") },
                 new List<KeyboardButton> { new KeyboardButton("Сортировка по возрастанию"), new KeyboardButton ("Сортировка по убыванию") },
@@ -45,22 +34,14 @@ public class TelegramBotHelper
                 {
                     if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                     {
-                        pathFile = await CSVProcessing.DownloadCsvFile(botClient, update);
+                        pathFile = await CSVProcessing.Download(botClient, update);
                         table = CSVProcessing.Read(pathFile, out List<int> bugs);
                         await client.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: GetButtons());
                         CSVProcessing.Write(botClient, update, table, pathFile);
                     } else
                     {
-                        await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());
+                        await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!");
                     }
-                    /* case "Загрузить JSON файл":
-                         await client.SendTextMessageAsync(update.Message.Chat.Id, "Загрузить JSON файл", replyMarkup: GetInputButtons());
-                         break;
-
-                     default:
-                         await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());
-                         break;
-                     */
                 }
                 else
                 {
@@ -94,7 +75,7 @@ public class TelegramBotHelper
                             break;
 
                         case "Скачать обработанный файл в СSV":
-                            await CSVProcessing.UploadCsvFile(botClient, update, pathFile);
+                            await CSVProcessing.Upload(botClient, update, pathFile);
                             break;
 
                         default:
