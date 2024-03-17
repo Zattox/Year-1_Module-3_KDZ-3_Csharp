@@ -128,7 +128,7 @@ internal class CSVProcessing
             }    
         }
     }
-    internal static async Task<string> DownloadCsvFile(ITelegramBotClient botClient, Update update)
+    internal static async Task<string> Download(ITelegramBotClient botClient, Update update)
     {
         var fileId = update.Message.Document.FileId;
         string destinationFilePath = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\{fileId}.csv";
@@ -139,7 +139,7 @@ internal class CSVProcessing
         return destinationFilePath;
     }
 
-    internal static async Task UploadCsvFile(ITelegramBotClient botClient, Update update, string path)
+    internal static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(
