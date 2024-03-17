@@ -1,11 +1,15 @@
-﻿using System.Reflection.PortableExecutable;
+﻿using Microsoft.VisualBasic;
+using System.ComponentModel.Design;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 public class TelegramBotHelper
 {
+    public const int CountOfHeaders = 9;
     private string token;
-    private string pathFile;
+    private static string pathFile;
     private static List<GeraldicSign> table;
     TelegramBotClient client;
     public TelegramBotHelper(string token)
@@ -24,71 +28,98 @@ public class TelegramBotHelper
             }
         );
     }
+
+    private static async Task DownloadData(ITelegramBotClient botClient, Update update)
+    {
+        string fileName = update.Message.Document.FileName;
+        if (fileName.EndsWith(".csv"))
+        {
+            pathFile = await CSVProcessing.Download(botClient, update);
+            table = CSVProcessing.Read(pathFile, out List<int> bugs);
+            if (bugs.Count > 0)
+            {
+                await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: GetButtons());
+            }
+            CSVProcessing.Write(table, pathFile);
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Данные загружены!");
+        }
+        else if (fileName.EndsWith(".json"))
+        {
+            pathFile = await JSONProcessing.Download(botClient, update);
+            table = JSONProcessing.Read(pathFile);
+            JSONProcessing.Write(pathFile, table);
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Данные загружены!");
+        }
+        else
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Программа не поддерживает такой тип данных!");
+        }
+
+    }
     private async void ProcessUpdateAsync(ITelegramBotClient botClient, Update update)
     {
-        switch (update.Type)
-        {
-            case Telegram.Bot.Types.Enums.UpdateType.Message:
-                var text = update.Message.Text;
-                if (table is null)
+        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message) {
+            var command = update.Message.Text;
+            if (table is null)
+            {
+                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                 {
-                    if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
-                    {
-                        pathFile = await CSVProcessing.Download(botClient, update);
-                        table = CSVProcessing.Read(pathFile, out List<int> bugs);
-                        await client.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: GetButtons());
-                        CSVProcessing.Write(botClient, update, table, pathFile);
-                    } else
-                    {
-                        await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!");
-                    }
+                    await DownloadData(botClient, update);
+                } else
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!");
+                }
+            }
+            else
+            {
+                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
+                {
+                    await DownloadData(botClient, update);
+                }
+                else if (command == "Фильтрация по Type") {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по Type", replyMarkup: GetButtons());
+                    List<GeraldicSign> editedTable = await FilteringData.FilterByOneConditionAsync(botClient, update, "Type", table);
+                }
+                else if (command == "Фильтрация по RegistrationDate")
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по RegistrationDate", replyMarkup: GetButtons());
+                    List<GeraldicSign> editedTable = await FilteringData.FilterByOneConditionAsync(botClient, update, "RegistrationDate", table);
+                }
+                else if (command == "Фильтрация по CertificateHolderName и RegistrationDate")
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по CertificateHolderName и RegistrationDate", replyMarkup: GetButtons());
+                    List<GeraldicSign> editedTable = await FilteringData.FilterByTwoConditionsAsync(botClient, update, "CertificateHolderName", "RegistrationDate", table);
+                }
+                else if (command == "Сортировка по возрастанию")
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Сортировка по возрастанию", replyMarkup: GetButtons());
+                    List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
+                }
+                else if (command == "Сортировка по убыванию")
+                {
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Сортировка по убыванию", replyMarkup: GetButtons());
+                    List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table, true);
+                }
+                else if (command == "Скачать обработанный файл в JSON")
+                {
+                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\output.json";
+                    JSONProcessing.Write(pathNewFile, table);
+                    await JSONProcessing.Upload(botClient, update, pathNewFile);
+                }
+                else if (command == "Скачать обработанный файл в СSV")
+                {
+                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\output.csv";
+                    CSVProcessing.Write(table, pathNewFile);
+                    await CSVProcessing.Upload(botClient, update, pathNewFile);
                 }
                 else
                 {
-                    switch (text)
-                    {
-                        case "Фильтрация по Type":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по Type", replyMarkup: GetButtons());
-                            await FilteringData.FilterByOneConditionAsync(botClient, update, "Type", table);
-                            break;
-
-                        case "Фильтрация по RegistrationDate":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по RegistrationDate", replyMarkup: GetButtons());
-                            await FilteringData.FilterByOneConditionAsync(botClient, update, "RegistrationDate", table);
-                            break;
-
-                        case "Фильтрация по CertificateHolderName и RegistrationDate":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по CertificateHolderName и RegistrationDate", replyMarkup: GetButtons());
-                            await FilteringData.FilterByTwoConditionsAsync(botClient, update, "CertificateHolderName", "RegistrationDate", table);
-                            break;
-
-                        case "Сортировка по возрастанию":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Сортировка по возрастанию", replyMarkup: GetButtons());
-                            break;
-
-                        case "Сортировка по убыванию":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Сортировка по убыванию", replyMarkup: GetButtons());
-                            break;
-
-                        case "Скачать обработанный файл в JSON":
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Скачать обработанный файл в JSON", replyMarkup: GetButtons());
-                            break;
-
-                        case "Скачать обработанный файл в СSV":
-                            await CSVProcessing.Upload(botClient, update, pathFile);
-                            break;
-
-                        default:
-                            await client.SendTextMessageAsync(update.Message.Chat.Id, "Такой функции нет", replyMarkup: GetButtons());
-                            break;
-                    }
+                    await client.SendTextMessageAsync(update.Message.Chat.Id, "Такой функции нет", replyMarkup: GetButtons());
                 }
-                break;
-
-            default:
-                Console.WriteLine(update.Type + " Not implemented!");
-                break;
-
+            }
+        } 
+        else {
+            await client.SendTextMessageAsync(update.Message.Chat.Id, update.Type + " Not implemented!");
         }
     }
 
