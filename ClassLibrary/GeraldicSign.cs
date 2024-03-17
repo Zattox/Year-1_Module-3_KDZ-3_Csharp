@@ -2,6 +2,8 @@
 using System.Text.Json.Serialization;
 public class GeraldicSign
 {
+    private const int countOfHeaders = 9;
+
     private string name;
     private string type;
     private string picture;
@@ -76,7 +78,7 @@ public class GeraldicSign
 
     [JsonPropertyName("global_id")]
     public string GlobalId => global_id;
-
+    public static int CountOfHeaders => countOfHeaders;
     public string ToJson()
     {
         return JsonSerializer.Serialize(this);

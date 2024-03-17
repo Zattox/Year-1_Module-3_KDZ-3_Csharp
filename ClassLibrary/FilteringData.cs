@@ -40,7 +40,7 @@ public class FilteringData
         return infoCondition;
     }
 
-    public static async Task FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, GeraldicSignList table)
+    public static async Task FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, List<GeraldicSign> table)
     {
         if (update.Message is not { } message)
             return;
@@ -51,17 +51,19 @@ public class FilteringData
         var chatId = message.Chat.Id;
         string selection = await FindValueSelectionAsync(botClient, chatId, condition);
 
-        GeraldicSignList newTable = new GeraldicSignList(table.HeadersEng, table.HeadersRus, new List<GeraldicSign>(0));
+        List<GeraldicSign> newTable = new List<GeraldicSign>();
+        newTable.Add(table[0]); newTable.Add(table[1]);
+
         foreach (GeraldicSign row in table)
         {
             string infoCondition = FindInfoCondition(condition, row);
             if (infoCondition == selection)
             {
-                newTable.Data.Add(row);
+                newTable.Add(row);
             }
         }
 
-        if (newTable.Data.Count == 0)
+        if (newTable.Count == 2)
         {
             await botClient.SendTextMessageAsync(
                    chatId: chatId,
@@ -70,7 +72,7 @@ public class FilteringData
         }
         return;
     }
-    public static async Task FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, GeraldicSignList table)
+    public static async Task FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, List<GeraldicSign> table)
     {
         if (update.Message is not { } message)
             return;
@@ -82,18 +84,20 @@ public class FilteringData
         string firstSelection = await FindValueSelectionAsync(botClient, chatId, firstCondition);
         string secondSelection = await FindValueSelectionAsync(botClient, chatId, secondCondition);
 
-        GeraldicSignList newTable = new GeraldicSignList(table.HeadersEng, table.HeadersRus, new List<GeraldicSign>());
+        List<GeraldicSign> newTable = new List<GeraldicSign>();
+        newTable.Add(table[0]); newTable.Add(table[1]);
+
         foreach (GeraldicSign row in table)
         {
             string firstInfoCondition = FindInfoCondition(firstCondition, row);
             string secondInfoCondition = FindInfoCondition(secondCondition, row);
             if (firstInfoCondition == firstSelection && secondInfoCondition == secondSelection)
             {
-                newTable.Data.Add(row);
+                newTable.Add(row);
             }
         }
 
-        if (newTable.Data.Count == 0)
+        if (newTable.Count == 2)
         {
             await botClient.SendTextMessageAsync(
                    chatId: chatId,

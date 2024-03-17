@@ -34,13 +34,18 @@
         else
             return Convert.ToInt32(firstRowX > secondRowX);
     }
-    internal static GeraldicSignList SortByRegistrationNumber(GeraldicSignList data, bool flag = false)
+    internal static List<GeraldicSign> SortByRegistrationNumber(List<GeraldicSign> data, bool flag = false)
     {
-        GeraldicSignList sortedData = data;
-        sortedData.Data.Sort(Comparator);
+        List<GeraldicSign> sortedData = data;
+        sortedData.Remove(data[0]);
+        sortedData.Remove(data[1]);
+        sortedData.Sort(Comparator);
 
         if (flag)
-            sortedData.Data.Reverse();
+            sortedData.Reverse();
+
+        sortedData.Insert(0, data[1]);
+        sortedData.Insert(0, data[0]);
 
         return sortedData;
     }

@@ -6,7 +6,7 @@ public class TelegramBotHelper
 {
     private string token;
     private string pathFile;
-    private static GeraldicSignList table;
+    private static List<GeraldicSign> table;
     TelegramBotClient client;
     public TelegramBotHelper(string token)
     {
@@ -46,9 +46,9 @@ public class TelegramBotHelper
                     if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                     {
                         pathFile = await CSVProcessing.DownloadCsvFile(botClient, update);
-                        table = CSVProcessing.ReadCsvFile(pathFile, out List<int> bugs);
+                        table = CSVProcessing.Read(pathFile, out List<int> bugs);
                         await client.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: GetButtons());
-                        CSVProcessing.SaveCsvFile(botClient, update, table, pathFile);
+                        CSVProcessing.Write(botClient, update, table, pathFile);
                     } else
                     {
                         await client.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!", replyMarkup: GetInputButtons());

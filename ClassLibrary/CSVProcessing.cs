@@ -27,7 +27,7 @@ internal class CSVProcessing
         foreach (string line in data)
         {
             string newLine = RemoveExtraCharacters(line);
-            if (result.Count < GeraldicSignList.CountOfHeaders)
+            if (result.Count < GeraldicSign.CountOfHeaders)
             {
                 result.Add(newLine);
             }
@@ -36,7 +36,7 @@ internal class CSVProcessing
     }
     private static bool CheckDataCsvFile(List<string> row)
     {
-        for (int i = 0; i < GeraldicSignList.CountOfHeaders; ++i)
+        for (int i = 0; i < GeraldicSign.CountOfHeaders; ++i)
         {
             if (row[i] is null || row[i] == "NA")
             {
@@ -62,9 +62,9 @@ internal class CSVProcessing
         return true;
     }
 
-    internal static GeraldicSignList ReadCsvFile(string destinationFilePath, out List<int> bugs)
+    internal static List<GeraldicSign> Read(string destinationFilePath, out List<int> bugs)
     {
-        GeraldicSignList table;
+        List<GeraldicSign> table = new List<GeraldicSign>();
         bugs = new List<int>(0);
         using (StreamReader sr = new StreamReader(destinationFilePath))
         {
@@ -82,7 +82,7 @@ internal class CSVProcessing
                 throw new ArgumentNullException("Пустые русские заголовки");
             }
 
-            if (headersEng.Count != GeraldicSignList.CountOfHeaders || headersRus.Count != GeraldicSignList.CountOfHeaders)
+            if (headersEng.Count != GeraldicSign.CountOfHeaders || headersRus.Count != GeraldicSign.CountOfHeaders)
             {
                 throw new ArgumentException("Неверное количество заголовков");
             }
@@ -92,7 +92,7 @@ internal class CSVProcessing
             while ((curLine = sr.ReadLine()) is not null)
             {
                 List<string> values = new List<string>(DataCorrection(curLine.Split(Separator)));
-                if (values.Count == GeraldicSignList.CountOfHeaders && CheckDataCsvFile(values))
+                if (values.Count == GeraldicSign.CountOfHeaders && CheckDataCsvFile(values))
                 {
                     stringData.Add(values);
                 }
@@ -103,18 +103,17 @@ internal class CSVProcessing
                 ++indOfLine;
             }
 
-            List<GeraldicSign> data = new List<GeraldicSign>();
+            table.Add(new GeraldicSign(headersEng));
+            table.Add(new GeraldicSign(headersRus));    
             foreach (var row in stringData)
             {
-                data.Add(new GeraldicSign(row));
+                table.Add(new GeraldicSign(row));
             }
-
-            table = new GeraldicSignList(headersEng, headersRus, data);
         }
 
         return table;
     }
-    internal static void SaveCsvFile(ITelegramBotClient botClient, Update update, GeraldicSignList table, string path)
+    internal static void Write(ITelegramBotClient botClient, Update update, List<GeraldicSign> table, string path)
     {
         if (path == null || path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
         {
@@ -123,12 +122,7 @@ internal class CSVProcessing
 
         using (var sw = new StreamWriter(path))
         {
-            GeraldicSign headersEng = new GeraldicSign(table.HeadersEng);
-            GeraldicSign headersRus = new GeraldicSign(table.HeadersRus);
-
-            sw.WriteLine(headersEng.ToString());
-            sw.WriteLine(headersRus.ToString());
-            foreach (var elem in table.Data)
+            foreach (var elem in table)
             {
                 sw.WriteLine(elem.ToString());
             }    
