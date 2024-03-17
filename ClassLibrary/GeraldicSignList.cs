@@ -29,6 +29,7 @@ public class GeraldicSignList: IEnumerable
     [JsonPropertyName("Data")]
     public List<GeraldicSign> Data { get; set; }
 
+    public static int CountOfHeaders => countOfHeaders;
     public IEnumerator GetEnumerator() => data.GetEnumerator();
     public string ToJson()
     {
