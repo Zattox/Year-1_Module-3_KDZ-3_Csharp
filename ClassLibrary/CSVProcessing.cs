@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Numerics;
 using System.Runtime.Intrinsics.X86;
+using System.Text;
 using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -27,7 +28,7 @@ internal class CSVProcessing
         foreach (string line in data)
         {
             string newLine = RemoveExtraCharacters(line);
-            if (result.Count < GeraldicSign.CountOfHeaders)
+            if (result.Count < TelegramBotHelper.CountOfHeaders)
             {
                 result.Add(newLine);
             }
@@ -36,7 +37,7 @@ internal class CSVProcessing
     }
     private static bool CheckDataCsvFile(List<string> row)
     {
-        for (int i = 0; i < GeraldicSign.CountOfHeaders; ++i)
+        for (int i = 0; i < TelegramBotHelper.CountOfHeaders; ++i)
         {
             if (row[i] is null || row[i] == "NA")
             {
@@ -62,11 +63,11 @@ internal class CSVProcessing
         return true;
     }
 
-    internal static List<GeraldicSign> Read(string destinationFilePath, out List<int> bugs)
+    internal static List<GeraldicSign> Read(string filePath, out List<int> bugs)
     {
         List<GeraldicSign> table = new List<GeraldicSign>();
         bugs = new List<int>(0);
-        using (StreamReader sr = new StreamReader(destinationFilePath))
+        using (StreamReader sr = new StreamReader(filePath))
         {
             string curLine = sr.ReadLine();
             List<string> headersEng = new List<string>(DataCorrection(curLine.Split(Separator)));
@@ -82,7 +83,7 @@ internal class CSVProcessing
                 throw new ArgumentNullException("Пустые русские заголовки");
             }
 
-            if (headersEng.Count != GeraldicSign.CountOfHeaders || headersRus.Count != GeraldicSign.CountOfHeaders)
+            if (headersEng.Count != TelegramBotHelper.CountOfHeaders || headersRus.Count != TelegramBotHelper.CountOfHeaders)
             {
                 throw new ArgumentException("Неверное количество заголовков");
             }
@@ -92,7 +93,7 @@ internal class CSVProcessing
             while ((curLine = sr.ReadLine()) is not null)
             {
                 List<string> values = new List<string>(DataCorrection(curLine.Split(Separator)));
-                if (values.Count == GeraldicSign.CountOfHeaders && CheckDataCsvFile(values))
+                if (values.Count == TelegramBotHelper.CountOfHeaders && CheckDataCsvFile(values))
                 {
                     stringData.Add(values);
                 }
@@ -113,14 +114,9 @@ internal class CSVProcessing
 
         return table;
     }
-    internal static void Write(ITelegramBotClient botClient, Update update, List<GeraldicSign> table, string path)
+    internal static void Write(List<GeraldicSign> table, string path)
     {
-        if (path == null || path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-        {
-            Console.WriteLine("Путь указан некорректно");
-        }
-
-        using (var sw = new StreamWriter(path))
+        using (var sw = new StreamWriter(path, false, Encoding.UTF8))
         {
             foreach (var elem in table)
             {
