@@ -2,17 +2,6 @@
 using static AppConstants;
 internal class Buttons
 {
-    internal static IReplyMarkup? GetFilterButtons()
-    {
-        return new ReplyKeyboardMarkup(
-            new List<List<KeyboardButton>>
-            {
-                new List<KeyboardButton> { new KeyboardButton(FilterButtonText1) },
-                new List<KeyboardButton> { new KeyboardButton(FilterButtonText2) },
-                new List<KeyboardButton> { new KeyboardButton(FilterButtonText3) }
-            }
-        );
-    }
     internal static IReplyMarkup? GetSortingButtons()
     {
         return new ReplyKeyboardMarkup(
