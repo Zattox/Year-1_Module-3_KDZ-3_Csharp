@@ -1,5 +1,11 @@
 ﻿public class FilteringData 
-{  
+{
+    /// <summary>
+    /// Разделение строки по заданному формату.
+    /// </summary>
+    /// <param name="message">Строка для разделение.</param>
+    /// <param name="condition">Условие для выборки, полученное из строки.</param>
+    /// <param name="value">Значение поля для выборки, полученнок из строки.</param>
     private static void FindValueFiterOneCondition(string message, out string condition, out string value)
     {
         string text = "Фильтрация по ";
@@ -8,6 +14,12 @@
         condition = result[0];
         value = result[1];
     }
+    /// <summary>
+    /// Выборка по одному условию.
+    /// </summary>
+    /// <param name="table">Таблица с данными.</param>
+    /// <param name="message">Сообщение, содержащие данные о формате выборки.</param>
+    /// <returns></returns>
     public static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         Methods.WriteStartLog(nameof(FilterByOneCondition));
@@ -31,6 +43,13 @@
         Methods.WriteStopLog(nameof(FilterByOneCondition));
         return result;
     }
+    /// <summary>
+    /// Разделение строки по заданному формату.
+    /// </summary>
+    /// <param name="message">Строка для разделение.</param>
+    /// <param name="buttonText">Текст с выбранной кнопки.</param>
+    /// <param name="value1">Значение поля для первого условия.</param>
+    /// <param name="value2">Значение поля для второго условия.</param>
     private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
     {
         string[] arr = message.Remove(0, buttonText.Length).Split('\"');
@@ -38,17 +57,27 @@
         value1 = result[0];
         value2 = result[1];
     }
+    /// <summary>
+    /// Выборка по двум условиям.
+    /// </summary>
+    /// <param name="table">Таблица с данными.</param>
+    /// <param name="message">Сообщение, содержащие данные о формате выборки.</param>
+    /// <param name="buttonText">Текст с выбранной кнопки.</param>
+    /// <returns></returns>
     public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
         Methods.WriteStartLog(nameof(FilterByTwoConditions));
         FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
+
+        // Убираем заголовки из таблицы.
         result.Remove(table[0]);
         result.Remove(table[1]);
 
         result = result.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
-
+        
+        // Возвращаем заголовки в таблицу.
         result.Insert(0, table[0]);
         result.Insert(1, table[1]);
 

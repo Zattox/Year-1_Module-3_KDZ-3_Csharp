@@ -6,8 +6,8 @@ internal class Program
     {
         try
         {
-            TelegramBotHelper hlp = new TelegramBotHelper(token);
-            Methods log = new Methods();
+            TelegramBotHelper hlp = new TelegramBotHelper(token); // Иницилизация класса для взаимодействия с ботом.
+            Methods log = new Methods(); // Иникилизация класса для логированния.
             hlp.GetUpdates();
         }
         catch (Exception ex)

@@ -4,6 +4,11 @@ using Telegram.Bot.Types;
 using static AppConstants;
 public class CSVProcessing
 {
+    /// <summary>
+    /// Удаляет ненужные символы из строки.
+    /// </summary>
+    /// <param name="line">Строка, которую нужно отформатировать.</param>
+    /// <returns>Отформатированная строка.</returns>
     private static string RemoveExtraCharacters(string line)
     {
         string answer = string.Empty;
@@ -16,6 +21,11 @@ public class CSVProcessing
         }
         return answer;
     }
+    /// <summary>
+    /// Убирает лишние пустые строки.
+    /// </summary>
+    /// <param name="data">Изначальный набор строк.</param>
+    /// <returns>Набор строк длинной равной количеству заголовков.</returns>
     private static List<string> DataCorrection(string[] data)
     {
         List<string> result = new List<string>();
@@ -29,6 +39,11 @@ public class CSVProcessing
         }
         return result;
     }
+    /// <summary>
+    /// Проверка правильности типов полей строки.
+    /// </summary>
+    /// <param name="row">Строка в которой нужно проверить правильность типов.</param>
+    /// <returns>true - если прошла проверку, иначе false.</returns>
     private static bool CheckDataCsvFile(List<string> row)
     {
         for (int i = 0; i < CountOfHeaders; ++i)
@@ -56,7 +71,14 @@ public class CSVProcessing
         }
         return true;
     }
-
+    /// <summary>
+    /// Чтение данных из уже загруженного CSV файла.
+    /// </summary>
+    /// <param name="filePath">Путь до существуещего CSV файла.</param>
+    /// <param name="bugs">Список индексов некорректных строчек.</param>
+    /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
+    /// <exception cref="ArgumentNullException">Пустые заголовки файла.</exception>
+    /// <exception cref="ArgumentException">Неверное количество заголовков файла.</exception>
     public static List<GeraldicSign> Read(string filePath, out List<int> bugs)
     {
         Methods.WriteStartLog(nameof(Read));
@@ -109,6 +131,11 @@ public class CSVProcessing
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
+    /// <summary>
+    /// Запись данных из таблицы в CSV файл.
+    /// </summary>
+    /// <param name="table">Таблица с данными.</param>
+    /// <param name="path">Путь до выходного файла.</param>
     public static void Write(List<GeraldicSign> table, string path)
     {
         Methods.WriteStartLog(nameof(Write));
@@ -121,6 +148,13 @@ public class CSVProcessing
         }
         Methods.WriteStopLog(nameof(Write));
     }
+    /// <summary>
+    /// Скачивание CSV файла из телеграмм чата с ботом.
+    /// </summary>
+    /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
+    /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
+    /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
+    /// <returns>Абсолютный путь до скаченного файла.</returns>
     public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
         Methods.WriteStartLog(nameof(Download));
@@ -133,7 +167,12 @@ public class CSVProcessing
         Methods.WriteStopLog(nameof(Download));
         return destinationFilePath;
     }
-
+    /// <summary>
+    /// Отправка CSV файла в телеграмм чат с ботом.
+    /// </summary>
+    /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
+    /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
+    /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
     public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         Methods.WriteStartLog(nameof(Upload));

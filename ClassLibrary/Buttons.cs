@@ -2,6 +2,9 @@
 using static AppConstants;
 public class Buttons
 {
+    /// <summary>
+    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора режима сортировки.
+    /// </summary>
     internal static IReplyMarkup? GetSortingButtons()
     {
         return new ReplyKeyboardMarkup(
@@ -12,6 +15,9 @@ public class Buttons
             }
         );
     }
+    /// <summary>
+    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора режима вывода данных.
+    /// </summary>
     internal static IReplyMarkup? GetOutputButtons()
     {
         return new ReplyKeyboardMarkup(
@@ -22,6 +28,9 @@ public class Buttons
             }
         );
     }
+    /// <summary>
+    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора команды бота.
+    /// </summary>
     internal static IReplyMarkup? GetMenuButtons()
     {
         return new ReplyKeyboardMarkup(

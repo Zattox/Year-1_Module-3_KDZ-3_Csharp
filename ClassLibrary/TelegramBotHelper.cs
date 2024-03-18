@@ -3,16 +3,20 @@ using Telegram.Bot.Types;
 using static AppConstants;
 public class TelegramBotHelper
 {
-    private string token;
-    private static string pathFile;
-    private static List<GeraldicSign> table;
+    private string token; // Токен для обращения к боту.
+    private static string pathFile; // Абсолютный путь до последнего загруженного файла с данными.
+    private static List<GeraldicSign> table; // Таблица с данными из последнего загруженного файла.
     private static TelegramBotClient botClient;
-    private static string ExecutablePath = Methods.FindExecutablePath();
+    private static string ExecutablePath = Methods.FindExecutablePath(); // Абсолютный путь до папки data.
 
     public TelegramBotHelper(string token)
     {
         this.token = token;
     }
+    /// <summary>
+    /// Скачивание данных от пользователя.
+    /// </summary>
+    /// <param name="update">Сообщение пользователя.</param>
     private async Task DownloadData(Update update)
     {
         Methods.WriteStartLog(nameof(DownloadData));
@@ -39,6 +43,11 @@ public class TelegramBotHelper
         }
         Methods.WriteStopLog(nameof(DownloadData));
     }
+    /// <summary>
+    /// Сохранение последних отредактированных данных. 
+    /// </summary>
+    /// <param name="update">Сообщение от пользователя.</param>
+    /// <param name="editedTable">Отредактированная таблица.</param>
     private async Task CompleteEditingTask(Update update, List<GeraldicSign> editedTable)
     {
         Methods.WriteStartLog(nameof(CompleteEditingTask));
@@ -54,13 +63,17 @@ public class TelegramBotHelper
         }
         Methods.WriteStopLog(nameof(CompleteEditingTask));
     }
+    /// <summary>
+    /// Обработка сообщений пользователя.
+    /// </summary>
+    /// <param name="update">Сообщение пользователя.</param>
     private async void ProcessUpdateAsync(Update update)
     {
         Methods.WriteStartLog(nameof(ProcessUpdateAsync));
         if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
         {
             var command = update.Message.Text;
-            if (table is null)
+            if (table is null) // Поведение программы, если пользователь еще не загрузил таблицу с данными.
             {
                 if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                 {
@@ -79,14 +92,15 @@ public class TelegramBotHelper
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, StoppedMessage);
                 }
             }
-            else
+            else // Поведение программы, если пользователь загрузил таблицу с данными.
             {
-                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
+                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document) // Если сообщение - документ.
                 {
                     await DownloadData(update);
                     return;
                 }
 
+                // Если пользователь хочет произвести выборку, ему необходимо в нужном формате прислать запрос.
                 if (command.StartsWith(FilterButtonText1))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
@@ -106,6 +120,7 @@ public class TelegramBotHelper
                     return;
                 }
 
+                // Основное меню команд, если в таблице есть данные.
                 switch (command)
                 {
                     case MenuButtonText1:
@@ -170,7 +185,9 @@ public class TelegramBotHelper
         }
         Methods.WriteStopLog(nameof(ProcessUpdateAsync));
     }
-
+    /// <summary>
+    /// Обновление сообщений от пользователя.
+    /// </summary>
     public void GetUpdates()
     {
         Methods.WriteStartLog(nameof(GetUpdates));

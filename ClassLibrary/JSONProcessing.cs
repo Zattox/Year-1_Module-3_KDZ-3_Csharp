@@ -5,6 +5,11 @@ using System.Text;
 using System.Text.Encodings.Web;
 public class JSONProcessing
 {
+    /// <summary>
+    /// Чтение данных из уже загруженного JSON файла.
+    /// </summary>
+    /// <param name="filePath">Путь до существуещего JSON файла.</param>
+    /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
     public static List<GeraldicSign> Read(string filePath)
     {
         Methods.WriteStartLog(nameof(Read));
@@ -21,6 +26,11 @@ public class JSONProcessing
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
+    /// <summary>
+    /// Запись данных из таблицы в JSON файл.
+    /// </summary>
+    /// <param name="table">Таблица с данными.</param>
+    /// <param name="path">Путь до выходного файла.</param>
     public static void Write(string filePath, List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
@@ -40,6 +50,13 @@ public class JSONProcessing
         Console.SetOut(oldOut);
         Methods.WriteStopLog(nameof(Write));
     }
+    /// <summary>
+    /// Скачивание JSON файла из телеграмм чата с ботом.
+    /// </summary>
+    /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
+    /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
+    /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
+    /// <returns>Абсолютный путь до скаченного файла.</returns>
     public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
         Methods.WriteStartLog(nameof(Download));
@@ -52,6 +69,12 @@ public class JSONProcessing
         Methods.WriteStopLog(nameof(Download));
         return destinationFilePath;
     }
+    /// <summary>
+    /// Отправка JSON файла в телеграмм чат с ботом.
+    /// </summary>
+    /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
+    /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
+    /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
     public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         Methods.WriteStartLog(nameof(Upload));
