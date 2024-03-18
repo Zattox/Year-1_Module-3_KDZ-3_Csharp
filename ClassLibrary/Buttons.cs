@@ -11,6 +11,7 @@ public class Buttons
             new List<List<KeyboardButton>>
             {
                 new List<KeyboardButton> { new KeyboardButton(SortingButtonText1) },
+                new List<KeyboardButton> { new KeyboardButton(SortingButtonText2) },
                 new List<KeyboardButton> { new KeyboardButton(SortingButtonText2) }
             }
         );
@@ -44,4 +45,3 @@ public class Buttons
         );
     }
 }
-

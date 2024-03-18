@@ -21,7 +21,7 @@ public class JSONProcessing
             text = sr.ReadToEnd();
         }
         Console.SetIn(oldIn);
-        
+
         var table = JsonSerializer.Deserialize<List<GeraldicSign>>(text);
         Methods.WriteStopLog(nameof(Read));
         return table;
@@ -37,7 +37,7 @@ public class JSONProcessing
         var options = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true 
+            WriteIndented = true
         };
         string jsonString = JsonSerializer.Serialize(table, options);
 

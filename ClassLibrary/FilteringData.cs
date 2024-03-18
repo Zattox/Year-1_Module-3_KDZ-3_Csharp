@@ -1,4 +1,4 @@
-﻿public class FilteringData 
+﻿public class FilteringData
 {
     /// <summary>
     /// Разделение строки по заданному формату.
@@ -76,7 +76,7 @@
         result.Remove(table[1]);
 
         result = result.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
-        
+
         // Возвращаем заголовки в таблицу.
         result.Insert(0, table[0]);
         result.Insert(1, table[1]);

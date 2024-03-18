@@ -72,7 +72,7 @@ public class GeraldicSign
     }
     public override string ToString()
     {
-        string result = $"\"{name}\";" + $"\"{type}\";" + $"\"{picture}\";" + $"\"{description}\";" 
+        string result = $"\"{name}\";" + $"\"{type}\";" + $"\"{picture}\";" + $"\"{description}\";"
             + $"\"{semantics}\";" + $"\"{certificateHolderName}\";" + $"\"{registrationDate}\";"
             + $"\"{registrationNumber}\";" + $"\"{global_id}\";";
         return result;

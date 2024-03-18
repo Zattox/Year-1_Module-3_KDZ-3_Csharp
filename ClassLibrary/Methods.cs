@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 public class Methods
 {
@@ -19,7 +18,7 @@ public class Methods
         {
             Directory.CreateDirectory(logFilePath);
         }
-        logFilePath +=$"\\Console_log_{DateTime.Now:dd-MM}.txt";
+        logFilePath += $"\\Console_log_{DateTime.Now:dd-MM}.txt";
         if (!File.Exists(logFilePath))
         {
             var st = File.Create(logFilePath);
@@ -43,7 +42,7 @@ public class Methods
     public static string FindExecutablePath()
     {
         // Поиск абсолютного пути до запускаемого файла проекта.
-        Process currentProcess = Process.GetCurrentProcess(); 
+        Process currentProcess = Process.GetCurrentProcess();
         string executablePath = currentProcess.MainModule.FileName;
 
         // Поднятие вверх на нужное количетсво директорий.
@@ -80,7 +79,8 @@ public class Methods
     /// Запись отметки о конце работы метода.
     /// </summary>
     /// <param name="methodName">Название метода, который закончил работу.</param>
-    public static void WriteStopLog(string methodName) {
+    public static void WriteStopLog(string methodName)
+    {
         string text = $"{methodName} successfully completed at {DateTime.Now:HH:mm:ss}";
         logger.LogInformation(text);
         using (StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true))

@@ -57,13 +57,13 @@
             {
                 return 0;
             }
-        } 
+        }
         else if (firstRowX > secondRowX)
         {
             return 1;
-        } 
+        }
         else
-        { 
+        {
             return -1;
         }
     }

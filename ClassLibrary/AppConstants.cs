@@ -1,6 +1,7 @@
 ﻿public class AppConstants
 {
     public const int CountOfHeaders = 9;
+    public const string Token = "6757896301:AAGpTPCVQBwt0dkJN5wYG4MD3dCmmUJWGyg";
     public const string Separator = "\";\"";
 
     public const string MenuButtonText1 = "Загрузить новый файл";
@@ -31,4 +32,3 @@
                                           $"{FilterButtonText2} \"значение поля\"\n\n" +
                                           $"{FilterButtonText3} \"значение поля\" \"значение поля\" ";
 }
-

@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-internal class Program
+﻿internal class Program
 {
-    private const string token = "6757896301:AAGpTPCVQBwt0dkJN5wYG4MD3dCmmUJWGyg";
     static void Main(string[] args)
     {
         try
         {
-            TelegramBotHelper hlp = new TelegramBotHelper(token); // Иницилизация класса для взаимодействия с ботом.
-            Methods log = new Methods(); // Иникилизация класса для логированния.
+            TelegramBotHelper hlp = new TelegramBotHelper(AppConstants.Token); // Иницилизация класса для взаимодействия с ботом.
+            Methods log = new Methods(); // Иницилизация класса для логированния.
             hlp.GetUpdates();
         }
         catch (Exception ex)
@@ -16,4 +14,3 @@ internal class Program
         }
     }
 }
-
