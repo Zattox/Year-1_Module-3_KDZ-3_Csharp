@@ -3,21 +3,20 @@ using Telegram.Bot.Types;
 using Telegram.Bot;
 using System.Text;
 using System.Text.Encodings.Web;
-using Newtonsoft.Json;
 internal class JSONProcessing
 {
     internal static List<GeraldicSign> Read(string filePath)
     {
-        string jsonText = string.Empty;
+        string text = "";
         TextReader oldIn = Console.In;
         using (StreamReader sr = new StreamReader(filePath))
         {
             Console.SetIn(sr);
-            jsonText = sr.ReadToEnd();
+            text = sr.ReadToEnd();
         }
         Console.SetIn(oldIn);
-
-        List<GeraldicSign> table = JsonConvert.DeserializeObject<List<GeraldicSign>>(jsonText);
+        
+        var table = JsonSerializer.Deserialize<List<GeraldicSign>>(text);
         return table;
     }
     internal static void Write(string filePath, List<GeraldicSign> table)
@@ -27,7 +26,7 @@ internal class JSONProcessing
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             WriteIndented = true 
         };
-        string jsonString = System.Text.Json.JsonSerializer.Serialize(table, options);
+        string jsonString = JsonSerializer.Serialize(table, options);
 
         TextWriter oldOut = Console.Out;
         using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))

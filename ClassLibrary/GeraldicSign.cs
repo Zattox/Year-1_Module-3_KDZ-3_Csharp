@@ -23,6 +23,8 @@ public class GeraldicSign
         registrationNumber = string.Empty;
         global_id = string.Empty;
     }
+
+    [JsonConstructor]
     public GeraldicSign(string name, string type, string picture, string description,
         string semantics, string certificateHolderName, string registrationDate,
         string registrationNumber, string global_id)
@@ -50,32 +52,32 @@ public class GeraldicSign
         global_id = data[8];
     }
 
-    [JsonPropertyName("Name")]
+    [JsonPropertyName("name")]
     public string Name => name;
 
-    [JsonPropertyName("Type")]
+    [JsonPropertyName("type")]
     public string Type => type;
 
-    [JsonPropertyName("Picture")]
+    [JsonPropertyName("picture")]
     public string Picture => picture;
 
-    [JsonPropertyName("Description")]
+    [JsonPropertyName("description")]
     public string Description => description;
 
-    [JsonPropertyName("Semantics")]
+    [JsonPropertyName("semantics")]
     public string Semantics => semantics;
 
-    [JsonPropertyName("CertificateHolderName")]
+    [JsonPropertyName("certificateHolderName")]
     public string CertificateHolderName => certificateHolderName;
 
-    [JsonPropertyName("RegistrationDate")]
+    [JsonPropertyName("registrationDate")]
     public string RegistrationDate => registrationDate;
 
-    [JsonPropertyName("RegistrationNumber")]
+    [JsonPropertyName("registrationNumber")]
     public string RegistrationNumber => registrationNumber;
 
     [JsonPropertyName("global_id")]
-    public string GlobalId => global_id;
+    public string Global_id => global_id;
     public string ToJson()
     {
         return JsonSerializer.Serialize(this);

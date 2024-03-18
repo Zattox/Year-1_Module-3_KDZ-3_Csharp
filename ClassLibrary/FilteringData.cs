@@ -34,7 +34,7 @@ public class FilteringData
             "CertificateHolderName" => row.CertificateHolderName,
             "RegistrationDate" => row.RegistrationDate,
             "RegistrationNumber" => row.RegistrationNumber,
-            "Global_id" => row.GlobalId,
+            "Global_id" => row.Global_id,
             _ => ""
         };
         return infoCondition;
