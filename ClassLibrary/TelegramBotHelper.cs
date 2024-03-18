@@ -52,7 +52,8 @@ public class TelegramBotHelper
     }
     private async void ProcessUpdateAsync(Update update)
     {
-        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message) {
+        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+        {
             var command = update.Message.Text;
             if (table is null)
             {
@@ -66,7 +67,7 @@ public class TelegramBotHelper
                     {
                         await botClient.SendTextMessageAsync(update.Message.Chat.Id, ErrorMessage + ex.Message);
                     }
-                } 
+                }
                 else
                 {
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, StoppedMessage);
@@ -82,7 +83,7 @@ public class TelegramBotHelper
 
                 if (command.StartsWith(FilterButtonText1))
                 {
-                    List<GeraldicSign> editedTable =  FilteringData.FilterByOneCondition(table, command);
+                    List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
                     await CompleteEditingTask(update, editedTable);
                     return;
                 }
@@ -124,7 +125,7 @@ public class TelegramBotHelper
                             await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetOutputButtons());
                             break;
                         }
-                    
+
                     case SortingButtonText1:
                         {
                             List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
@@ -156,8 +157,9 @@ public class TelegramBotHelper
                         break;
                 }
             }
-        } 
-        else {
+        }
+        else
+        {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
     }

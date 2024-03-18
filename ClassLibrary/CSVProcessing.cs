@@ -99,7 +99,7 @@ public class CSVProcessing
             }
 
             table.Add(new GeraldicSign(headersEng));
-            table.Add(new GeraldicSign(headersRus));    
+            table.Add(new GeraldicSign(headersRus));
             foreach (var row in stringData)
             {
                 table.Add(new GeraldicSign(row));
@@ -115,7 +115,7 @@ public class CSVProcessing
             foreach (var elem in table)
             {
                 sw.WriteLine(elem.ToString());
-            }    
+            }
         }
     }
     public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
