@@ -1,12 +1,36 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 public class Methods
 {
     private readonly static ILogger<Methods> logger;
+    private readonly static string logFilePath;
     static Methods()
     {
-        using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-        logger = factory.CreateLogger<Methods>();
+        logFilePath = FindExecutablePath();
+        logFilePath = Path.GetDirectoryName(logFilePath);
+
+        logFilePath += "\\var";
+        if (!Directory.Exists(logFilePath))
+        {
+            Directory.CreateDirectory(logFilePath);
+        }
+        logFilePath +=$"\\Console_log_{DateTime.Now:dd-MM}.txt";
+        if (!File.Exists(logFilePath))
+        {
+            var st = File.Create(logFilePath);
+            st.Close();
+        }
+
+        using (StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true))
+        {
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            logger = loggerFactory.CreateLogger<Methods>();
+        }
     }
     public static string FindExecutablePath()
     {
@@ -30,14 +54,29 @@ public class Methods
 
     public static void WriteStartLog(string methodName)
     {
-        logger.LogInformation($"{methodName} request at {DateTime.Now:hh:mm:ss}");
+        string text = $"{methodName} request at {DateTime.Now:HH:mm:ss}";
+        logger.LogInformation(text);
+        using (StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true))
+        {
+            logFileWriter.WriteLine(text);
+        }
     }
-    public static void WriteStopLog(string methodName) { 
-        logger.LogInformation($"{methodName} successfully completed at {DateTime.Now:hh:mm:ss}");
+    public static void WriteStopLog(string methodName) {
+        string text = $"{methodName} successfully completed at {DateTime.Now:HH:mm:ss}";
+        logger.LogInformation(text);
+        using (StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true))
+        {
+            logFileWriter.WriteLine(text);
+        }
     }
 
     public static void WriteErrorLog(string methodName, Exception ex)
     {
-        logger.LogError($"An error occurred in {methodName} at {DateTime.Now:hh:mm:ss}\n{ex.GetType()}\n{ex.Message}");
+        string text = $"An error occurred in {methodName} at {DateTime.Now:HH:mm:ss}\n{ex.GetType()}\n{ex.Message}";
+        logger.LogError(text);
+        using (StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true))
+        {
+            logFileWriter.WriteLine(text);
+        }
     }
 }
