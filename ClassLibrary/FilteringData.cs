@@ -14,21 +14,16 @@
         FindValueFiterOneCondition(message, out string condition, out string value);
         List<GeraldicSign> result = new List<GeraldicSign>(table);
         result.Remove(table[0]);
-        result.Remove(table[0]);
+        result.Remove(table[1]);
 
-        result = condition switch
+        if (condition.StartsWith("Type"))
         {
-            "Name" => result.Where(row => row.Name == value).ToList(),
-            "Type" => result.Where(row => row.Type == value).ToList(),
-            "Picture" => result.Where(row => row.Picture == value).ToList(),
-            "Description" => result.Where(row => row.Description == value).ToList(),
-            "Semantics" => result.Where(row => row.Semantics == value).ToList(),
-            "CertificateHolderName" => result.Where(row => row.CertificateHolderName == value).ToList(),
-            "RegistrationDate" => result.Where(row => row.RegistrationDate == value).ToList(),
-            "RegistrationNumber" => result.Where(row => row.RegistrationNumber == value).ToList(),
-            "Global_id" => result.Where(row => row.Global_id == value).ToList(),
-            _ => new List<GeraldicSign>()
-        };
+            result = result.Where(row => row.Type == value).ToList();
+        }
+        else if (condition.StartsWith("RegistrationDate"))
+        {
+            result = result.Where(row => row.RegistrationDate == value).ToList();
+        }
 
         result.Insert(0, table[1]);
         result.Insert(0, table[0]);
@@ -50,7 +45,7 @@
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
         result.Remove(table[0]);
-        result.Remove(table[0]);
+        result.Remove(table[1]);
 
         result = result.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
 
