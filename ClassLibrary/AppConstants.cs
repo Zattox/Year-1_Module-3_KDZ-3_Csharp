@@ -15,8 +15,8 @@
     public const string SortingButtonText1 = "Сортировка по RegistrationNumber в порядке возрастания номера";
     public const string SortingButtonText2 = "Сортировка по RegistrationNumber в порядке убывания номера";
 
-    public const string OutputButtonText1 = "Скачать последний обработанный файл в CSV";
-    public const string OutputButtonText2 = "Скачать последний обработанный файл в JSON";
+    public const string OutputButtonText1 = "Скачать последний обработанный файл в JSON";
+    public const string OutputButtonText2 = "Скачать последний обработанный файл в CSV";
 
     public const string InputMessage = "Загрузите файл в формате JSON или CSV";
     public const string ErrorMessage = "Произошла ошибка во время исполнения программы!";
