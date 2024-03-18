@@ -1,12 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.IO;
-using System.Numerics;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading;
+﻿using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using static AppConstants;
 internal class CSVProcessing
 {
     const string Separator = "\";\"";
@@ -28,7 +23,7 @@ internal class CSVProcessing
         foreach (string line in data)
         {
             string newLine = RemoveExtraCharacters(line);
-            if (result.Count < TelegramBotHelper.CountOfHeaders)
+            if (result.Count < CountOfHeaders)
             {
                 result.Add(newLine);
             }
@@ -37,7 +32,7 @@ internal class CSVProcessing
     }
     private static bool CheckDataCsvFile(List<string> row)
     {
-        for (int i = 0; i < TelegramBotHelper.CountOfHeaders; ++i)
+        for (int i = 0; i < CountOfHeaders; ++i)
         {
             if (row[i] is null || row[i] == "NA")
             {
@@ -83,7 +78,7 @@ internal class CSVProcessing
                 throw new ArgumentNullException("Пустые русские заголовки");
             }
 
-            if (headersEng.Count != TelegramBotHelper.CountOfHeaders || headersRus.Count != TelegramBotHelper.CountOfHeaders)
+            if (headersEng.Count != CountOfHeaders || headersRus.Count != CountOfHeaders)
             {
                 throw new ArgumentException("Неверное количество заголовков");
             }
@@ -93,7 +88,7 @@ internal class CSVProcessing
             while ((curLine = sr.ReadLine()) is not null)
             {
                 List<string> values = new List<string>(DataCorrection(curLine.Split(Separator)));
-                if (values.Count == TelegramBotHelper.CountOfHeaders && CheckDataCsvFile(values))
+                if (values.Count == CountOfHeaders && CheckDataCsvFile(values))
                 {
                     stringData.Add(values);
                 }

@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using System.ComponentModel.Design;
-using System.Reflection.PortableExecutable;
-using System.Runtime.CompilerServices;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 public class TelegramBotHelper
 {
     private static string ExecutablePath = Methods.FindExecutablePath();
