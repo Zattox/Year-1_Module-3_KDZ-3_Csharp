@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-internal class Methods
+public class Methods
 {
-    internal static string FindExecutablePath()
+    public static string FindExecutablePath()
     {
         Process currentProcess = Process.GetCurrentProcess();
         string executablePath = currentProcess.MainModule.FileName;
@@ -19,5 +19,28 @@ internal class Methods
         }
 
         return executablePath;
+    }
+    /// <summary>
+    /// Меняет два объекта одного типа местами.
+    /// </summary>
+    /// <param name="a">Первый объект.</param>
+    /// <param name="b">Второй объект.</param>
+    public static void Swap<T>(ref T a, ref T b)
+    {
+        T temp = a;
+        a = b;
+        b = temp;
+    }
+
+    /// <summary>
+    /// Вывод текста в консоль с выбранным цветом.
+    /// </summary>
+    /// <param name="text">Текс.</param>
+    /// <param name="color">Цвет букв в консоли.</param>
+    public static void PrintWithColor(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ForegroundColor = ConsoleColor.White;
     }
 }
