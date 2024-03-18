@@ -3,15 +3,15 @@
     private static void FindValueFiterOneCondition(string message, out string condition, out string value)
     {
         string text = "Фильтрация по ";
-        string[] arr = message.Remove(0, text.Length).Split(' ', '\"');
-        var result = arr.Where(x => !string.IsNullOrEmpty(x)).ToList();
+        string[] arr = message.Remove(0, text.Length).Split('\"');
+        var result = arr.Where(x => x.Length > 1).ToList();
         condition = result[0];
         value = result[1];
     }
     internal static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         FindValueFiterOneCondition(message, out string condition, out string value);
-        var result = table;
+        List<GeraldicSign> result = new List<GeraldicSign>(table);
         result.Remove(table[0]);
         result.Remove(table[0]);
 
@@ -36,16 +36,16 @@
     }
     private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
     {
-        string[] arr = message.Remove(0, buttonText.Length).Split(' ', '\"');
-        var result = arr.Where(x => !string.IsNullOrEmpty(x)).ToList();
-        value1 = result[2];
-        value2 = result[3];
+        string[] arr = message.Remove(0, buttonText.Length).Split('\"');
+        var result = arr.Where(x => x.Length > 1).ToList();
+        value1 = result[0];
+        value2 = result[1];
     }
     internal static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
         FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
 
-        var result = table;
+        List<GeraldicSign> result = new List<GeraldicSign>(table);
         result.Remove(table[0]);
         result.Remove(table[0]);
 

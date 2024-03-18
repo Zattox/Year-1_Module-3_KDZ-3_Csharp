@@ -77,22 +77,26 @@ public class TelegramBotHelper
                 if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                 {
                     await DownloadData(update);
+                    return;
                 }
 
                 if (command.StartsWith(FilterButtonText1))
                 {
                     List<GeraldicSign> editedTable =  FilteringData.FilterByOneCondition(table, command);
                     await CompleteEditingTask(update, editedTable);
+                    return;
                 }
                 else if (command.StartsWith(FilterButtonText2))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
                     await CompleteEditingTask(update, editedTable);
+                    return;
                 }
                 else if (command.StartsWith(FilterButtonText3))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command, FilterButtonText3);
                     await CompleteEditingTask(update, editedTable);
+                    return;
                 }
 
                 switch (command)
