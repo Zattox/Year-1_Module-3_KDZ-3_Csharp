@@ -59,6 +59,7 @@ public class CSVProcessing
 
     public static List<GeraldicSign> Read(string filePath, out List<int> bugs)
     {
+        Methods.WriteStartLog(nameof(Read));
         List<GeraldicSign> table = new List<GeraldicSign>();
         bugs = new List<int>(0);
         using (StreamReader sr = new StreamReader(filePath))
@@ -105,11 +106,12 @@ public class CSVProcessing
                 table.Add(new GeraldicSign(row));
             }
         }
-
+        Methods.WriteStopLog(nameof(Read));
         return table;
     }
     public static void Write(List<GeraldicSign> table, string path)
     {
+        Methods.WriteStartLog(nameof(Write));
         using (var sw = new StreamWriter(path, false, Encoding.UTF8))
         {
             foreach (var elem in table)
@@ -117,24 +119,29 @@ public class CSVProcessing
                 sw.WriteLine(elem.ToString());
             }
         }
+        Methods.WriteStopLog(nameof(Write));
     }
     public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
+        Methods.WriteStartLog(nameof(Download));
         var fileId = update.Message.Document.FileId;
         string destinationFilePath = $"{ExecutablePath}\\LastInput.csv";
 
         await using Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
         fileStream.Close();
+        Methods.WriteStopLog(nameof(Download));
         return destinationFilePath;
     }
 
     public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
+        Methods.WriteStartLog(nameof(Upload));
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
             document: InputFile.FromStream(stream: stream, fileName: $"Table.csv"),
             replyMarkup: Buttons.GetMenuButtons());
+        Methods.WriteStopLog(nameof(Upload));
     }
 }

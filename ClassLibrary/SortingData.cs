@@ -58,6 +58,7 @@
     }
     public static List<GeraldicSign> SortByRegistrationNumber(List<GeraldicSign> data, bool flag = false)
     {
+        Methods.WriteStartLog(nameof(SortByRegistrationNumber));
         List<GeraldicSign> sortedData = new List<GeraldicSign>(data);
         sortedData.Remove(data[0]);
         sortedData.Remove(data[1]);
@@ -81,7 +82,7 @@
 
         sortedData.Insert(0, data[1]);
         sortedData.Insert(0, data[0]);
-
+        Methods.WriteStopLog(nameof(SortByRegistrationNumber));
         return sortedData;
     }
 }

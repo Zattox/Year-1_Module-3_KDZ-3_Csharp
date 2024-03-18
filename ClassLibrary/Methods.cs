@@ -1,6 +1,13 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 public class Methods
 {
+    private readonly static ILogger<Methods> logger;
+    static Methods()
+    {
+        using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+        logger = factory.CreateLogger<Methods>();
+    }
     public static string FindExecutablePath()
     {
         Process currentProcess = Process.GetCurrentProcess();
@@ -20,27 +27,17 @@ public class Methods
 
         return executablePath;
     }
-    /// <summary>
-    /// Меняет два объекта одного типа местами.
-    /// </summary>
-    /// <param name="a">Первый объект.</param>
-    /// <param name="b">Второй объект.</param>
-    public static void Swap<T>(ref T a, ref T b)
+
+    public static void WriteStartLog(string methodName)
     {
-        T temp = a;
-        a = b;
-        b = temp;
+        logger.LogInformation($"{methodName} request at {DateTime.Now:hh:mm:ss}");
+    }
+    public static void WriteStopLog(string methodName) { 
+        logger.LogInformation($"{methodName} successfully completed at {DateTime.Now:hh:mm:ss}");
     }
 
-    /// <summary>
-    /// Вывод текста в консоль с выбранным цветом.
-    /// </summary>
-    /// <param name="text">Текс.</param>
-    /// <param name="color">Цвет букв в консоли.</param>
-    public static void PrintWithColor(string text, ConsoleColor color)
+    public static void WriteErrorLog(string methodName, Exception ex)
     {
-        Console.ForegroundColor = color;
-        Console.WriteLine(text);
-        Console.ForegroundColor = ConsoleColor.White;
+        logger.LogError($"An error occurred in {methodName} at {DateTime.Now:hh:mm:ss}\n{ex.GetType()}\n{ex.Message}");
     }
 }

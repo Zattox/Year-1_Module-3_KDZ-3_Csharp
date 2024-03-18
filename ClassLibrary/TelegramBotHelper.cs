@@ -13,8 +13,9 @@ public class TelegramBotHelper
     {
         this.token = token;
     }
-    private static async Task DownloadData(Update update)
+    private async Task DownloadData(Update update)
     {
+        Methods.WriteStartLog(nameof(DownloadData));
         string fileName = update.Message.Document.FileName;
         if (fileName.EndsWith(".csv"))
         {
@@ -36,9 +37,11 @@ public class TelegramBotHelper
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
+        Methods.WriteStopLog(nameof(DownloadData));
     }
-    private static async Task CompleteEditingTask(Update update, List<GeraldicSign> editedTable)
+    private async Task CompleteEditingTask(Update update, List<GeraldicSign> editedTable)
     {
+        Methods.WriteStartLog(nameof(CompleteEditingTask));
         if (editedTable.Count == 2)
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, UnluckyMessage, replyMarkup: Buttons.GetMenuButtons());
@@ -49,9 +52,11 @@ public class TelegramBotHelper
             JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
+        Methods.WriteStopLog(nameof(CompleteEditingTask));
     }
     private async void ProcessUpdateAsync(Update update)
     {
+        Methods.WriteStartLog(nameof(ProcessUpdateAsync));
         if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
         {
             var command = update.Message.Text;
@@ -65,6 +70,7 @@ public class TelegramBotHelper
                     }
                     catch (Exception ex)
                     {
+                        Methods.WriteErrorLog(nameof(ProcessUpdateAsync), ex);
                         await botClient.SendTextMessageAsync(update.Message.Chat.Id, ErrorMessage + ex.Message);
                     }
                 }
@@ -162,10 +168,12 @@ public class TelegramBotHelper
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
+        Methods.WriteStopLog(nameof(ProcessUpdateAsync));
     }
 
     public void GetUpdates()
     {
+        Methods.WriteStartLog(nameof(GetUpdates));
         botClient = new TelegramBotClient(token);
         var me = botClient.GetMeAsync().Result;
         if (me != null && !string.IsNullOrEmpty(me.Username))
@@ -187,10 +195,11 @@ public class TelegramBotHelper
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Methods.WriteErrorLog(nameof(GetUpdates), ex);
                 }
                 Thread.Sleep(1000);
             }
         }
+        Methods.WriteStopLog(nameof(GetUpdates));
     }
 }

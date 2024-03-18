@@ -10,6 +10,7 @@
     }
     public static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
+        Methods.WriteStartLog(nameof(FilterByOneCondition));
         FindValueFiterOneCondition(message, out string condition, out string value);
         List<GeraldicSign> result = new List<GeraldicSign>(table);
         result.Remove(table[0]);
@@ -32,6 +33,7 @@
         result.Insert(0, table[1]);
         result.Insert(0, table[0]);
 
+        Methods.WriteStopLog(nameof(FilterByOneCondition));
         return result;
     }
     private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
@@ -43,6 +45,7 @@
     }
     public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
+        Methods.WriteStartLog(nameof(FilterByTwoConditions));
         FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
@@ -53,6 +56,8 @@
 
         result.Insert(0, table[0]);
         result.Insert(1, table[1]);
+
+        Methods.WriteStopLog(nameof(FilterByTwoConditions));
         return result;
     }
 }
