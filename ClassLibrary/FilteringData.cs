@@ -11,19 +11,27 @@
     internal static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         FindValueFiterOneCondition(message, out string condition, out string value);
-        List<GeraldicSign> result = condition switch
+        var result = table;
+        result.Remove(table[0]);
+        result.Remove(table[0]);
+
+        result = condition switch
         {
-            "Name" => table.Where(row => row.Name == value).ToList(),
-            "Type" => table.Where(row => row.Type == value).ToList(),
-            "Picture" => table.Where(row => row.Picture == value).ToList(),
-            "Description" => table.Where(row => row.Description == value).ToList(),
-            "Semantics" => table.Where(row => row.Semantics == value).ToList(),
-            "CertificateHolderName" => table.Where(row => row.CertificateHolderName == value).ToList(),
-            "RegistrationDate" => table.Where(row => row.RegistrationDate == value).ToList(),
-            "RegistrationNumber" => table.Where(row => row.RegistrationNumber == value).ToList(),
-            "Global_id" => table.Where(row => row.Global_id == value).ToList(),
+            "Name" => result.Where(row => row.Name == value).ToList(),
+            "Type" => result.Where(row => row.Type == value).ToList(),
+            "Picture" => result.Where(row => row.Picture == value).ToList(),
+            "Description" => result.Where(row => row.Description == value).ToList(),
+            "Semantics" => result.Where(row => row.Semantics == value).ToList(),
+            "CertificateHolderName" => result.Where(row => row.CertificateHolderName == value).ToList(),
+            "RegistrationDate" => result.Where(row => row.RegistrationDate == value).ToList(),
+            "RegistrationNumber" => result.Where(row => row.RegistrationNumber == value).ToList(),
+            "Global_id" => result.Where(row => row.Global_id == value).ToList(),
             _ => new List<GeraldicSign>()
-        }; 
+        };
+
+        result.Insert(0, table[1]);
+        result.Insert(0, table[0]);
+
         return result;
     }
     private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
@@ -36,7 +44,15 @@
     internal static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
         FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
-        List<GeraldicSign> result = table.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
+
+        var result = table;
+        result.Remove(table[0]);
+        result.Remove(table[0]);
+
+        result = result.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
+
+        result.Insert(0, table[0]);
+        result.Insert(1, table[1]);
         return result;
     }
 }

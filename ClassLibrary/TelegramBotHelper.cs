@@ -37,6 +37,19 @@ public class TelegramBotHelper
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
     }
+    private static async Task CompleteEditingTask(Update update, List<GeraldicSign> editedTable)
+    {
+        if (editedTable.Count == 2)
+        {
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, UnluckyMessage, replyMarkup: Buttons.GetMenuButtons());
+        }
+        else
+        {
+            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
+            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+        }
+    }
     private async void ProcessUpdateAsync(Update update)
     {
         if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message) {
@@ -69,23 +82,17 @@ public class TelegramBotHelper
                 if (command.StartsWith(FilterButtonText1))
                 {
                     List<GeraldicSign> editedTable =  FilteringData.FilterByOneCondition(table, command);
-                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                    await CompleteEditingTask(update, editedTable);
                 }
                 else if (command.StartsWith(FilterButtonText2))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
-                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                    await CompleteEditingTask(update, editedTable);
                 }
                 else if (command.StartsWith(FilterButtonText3))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command, FilterButtonText3);
-                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                    await CompleteEditingTask(update, editedTable);
                 }
 
                 switch (command)
@@ -117,18 +124,14 @@ public class TelegramBotHelper
                     case SortingButtonText1:
                         {
                             List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
-                            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                            await CompleteEditingTask(update, editedTable);
                             break;
                         }
 
                     case SortingButtonText2:
                         {
                             List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table, true);
-                            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                            await CompleteEditingTask(update, editedTable);
                             break;
                         }
 
