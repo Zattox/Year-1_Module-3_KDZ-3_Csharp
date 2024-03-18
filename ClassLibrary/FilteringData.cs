@@ -8,7 +8,7 @@
         condition = result[0];
         value = result[1];
     }
-    internal static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
+    public static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         FindValueFiterOneCondition(message, out string condition, out string value);
         List<GeraldicSign> result = new List<GeraldicSign>(table);
@@ -41,7 +41,7 @@
         value1 = result[0];
         value2 = result[1];
     }
-    internal static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
+    public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
         FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
 

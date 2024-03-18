@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types.ReplyMarkups;
 using static AppConstants;
-internal class Buttons
+public class Buttons
 {
     internal static IReplyMarkup? GetSortingButtons()
     {

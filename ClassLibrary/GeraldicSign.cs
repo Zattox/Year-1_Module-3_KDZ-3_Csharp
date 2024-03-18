@@ -11,18 +11,6 @@ public class GeraldicSign
     private string registrationDate;
     private string registrationNumber;
     private string global_id;
-    public GeraldicSign()
-    {
-        name = string.Empty;
-        type = string.Empty;
-        picture = string.Empty;
-        description = string.Empty;
-        semantics = string.Empty;
-        certificateHolderName = string.Empty;
-        registrationDate = string.Empty;
-        registrationNumber = string.Empty;
-        global_id = string.Empty;
-    }
 
     [JsonConstructor]
     public GeraldicSign(string name, string type, string picture, string description,

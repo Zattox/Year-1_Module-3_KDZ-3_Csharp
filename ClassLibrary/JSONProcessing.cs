@@ -3,9 +3,9 @@ using Telegram.Bot.Types;
 using Telegram.Bot;
 using System.Text;
 using System.Text.Encodings.Web;
-internal class JSONProcessing
+public class JSONProcessing
 {
-    internal static List<GeraldicSign> Read(string filePath)
+    public static List<GeraldicSign> Read(string filePath)
     {
         string text = "";
         TextReader oldIn = Console.In;
@@ -19,7 +19,7 @@ internal class JSONProcessing
         var table = JsonSerializer.Deserialize<List<GeraldicSign>>(text);
         return table;
     }
-    internal static void Write(string filePath, List<GeraldicSign> table)
+    public static void Write(string filePath, List<GeraldicSign> table)
     {
         var options = new JsonSerializerOptions
         {
@@ -36,7 +36,7 @@ internal class JSONProcessing
         }
         Console.SetOut(oldOut);
     }
-    internal static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
+    public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
         var fileId = update.Message.Document.FileId;
         string destinationFilePath = $"{ExecutablePath}\\LastInput.json";
@@ -46,8 +46,7 @@ internal class JSONProcessing
         fileStream.Close();
         return destinationFilePath;
     }
-
-    internal static async Task Upload(ITelegramBotClient botClient, Update update, string path)
+    public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         await using Stream stream = System.IO.File.OpenRead(path);
         await botClient.SendDocumentAsync(

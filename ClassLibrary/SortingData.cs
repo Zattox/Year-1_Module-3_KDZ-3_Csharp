@@ -1,4 +1,4 @@
-﻿internal class SortingData
+﻿public class SortingData
 {
     private static void ParseRegistrationNumber(out int firstNumber, out int secondNumber, string registrationNumber)
     {
@@ -26,7 +26,7 @@
             strSecondNumber = "0";
         secondNumber = int.Parse(strSecondNumber);
     }
-    public static int Comparator(GeraldicSign x, GeraldicSign y)
+    private static int Comparator(GeraldicSign x, GeraldicSign y)
     {
         ParseRegistrationNumber(out int firstRowX, out int firstRowY, x.RegistrationNumber);
         ParseRegistrationNumber(out int secondRowX, out int secondRowY, y.RegistrationNumber);
@@ -56,7 +56,7 @@
         }
 
     }
-    internal static List<GeraldicSign> SortByRegistrationNumber(List<GeraldicSign> data, bool flag = false)
+    public static List<GeraldicSign> SortByRegistrationNumber(List<GeraldicSign> data, bool flag = false)
     {
         List<GeraldicSign> sortedData = new List<GeraldicSign>(data);
         sortedData.Remove(data[0]);

@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using static AppConstants;
-internal class CSVProcessing
+public class CSVProcessing
 {
     private static string RemoveExtraCharacters(string line)
     {
@@ -57,7 +57,7 @@ internal class CSVProcessing
         return true;
     }
 
-    internal static List<GeraldicSign> Read(string filePath, out List<int> bugs)
+    public static List<GeraldicSign> Read(string filePath, out List<int> bugs)
     {
         List<GeraldicSign> table = new List<GeraldicSign>();
         bugs = new List<int>(0);
@@ -108,7 +108,7 @@ internal class CSVProcessing
 
         return table;
     }
-    internal static void Write(List<GeraldicSign> table, string path)
+    public static void Write(List<GeraldicSign> table, string path)
     {
         using (var sw = new StreamWriter(path, false, Encoding.UTF8))
         {
@@ -118,7 +118,7 @@ internal class CSVProcessing
             }    
         }
     }
-    internal static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
+    public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
         var fileId = update.Message.Document.FileId;
         string destinationFilePath = $"{ExecutablePath}\\LastInput.csv";
@@ -129,7 +129,7 @@ internal class CSVProcessing
         return destinationFilePath;
     }
 
-    internal static async Task Upload(ITelegramBotClient botClient, Update update, string path)
+    public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(

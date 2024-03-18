@@ -1,4 +1,4 @@
-﻿internal class AppConstants
+﻿public class AppConstants
 {
     public const int CountOfHeaders = 9;
     public const string Separator = "\";\"";
