@@ -24,10 +24,11 @@
     public const string TypeErrorMessage = "Программа не поддерживает такой тип данных!";
     public const string CommandErrorMessage = "Такой команды не существует, повторите попытку";
     public const string ChooseCommandMessage = "Выберите следующее действие";
-    public const string SuccessfulSaveMessage = "Данные успешно обработаны и сохранены!";
-    public const string ChooseFilterMessage = "Введите запрос в одном из следующих форматов:\n" +
-                                          $"{FilterButtonText1} \"значение поля\"\n" +
-                                          $"{FilterButtonText2} \"значение поля\"\n" +
+    public const string SuccessfulSaveMessage = "Данные успешно обработаны и локально сохранены!";
+    public const string UnluckyMessage = "По данному запросу не нашлось результатов (」°ロ°)」";
+    public const string ChooseFilterMessage = "Введите запрос в одном из следующих форматов:\n\n" +
+                                          $"{FilterButtonText1} \"значение поля\"\n\n" +
+                                          $"{FilterButtonText2} \"значение поля\"\n\n" +
                                           $"{FilterButtonText3} \"значение поля\" \"значение поля\"";
 }
 
