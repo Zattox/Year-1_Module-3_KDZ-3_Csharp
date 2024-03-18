@@ -1,101 +1,42 @@
-﻿using Telegram.Bot;
-using Telegram.Bot.Types;
-public class FilteringData 
-{
-    private static async Task<string> FindValueSelectionAsync(ITelegramBotClient botClient, long chatId, string condition)
+﻿public class FilteringData 
+{  
+    private static void FindValueFiterOneCondition(string message, out string condition, out string value)
     {
-        string selection = string.Empty;
-        while (true)
-        {
-            var curMessage = await botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: $"Введите значение поля для построения выборки {condition}: ");
-            if (curMessage.Text is null)
-            {
-                await botClient.SendTextMessageAsync(
-                    chatId: chatId,
-                    text: "Вы ввели пустое значение, повторите попытку");
-                continue;
-            }
-            selection = curMessage.Text;
-            break;
-        }
-        return selection;
+        string text = "Фильтрация по ";
+        string[] arr = message.Remove(0, text.Length).Split(' ', '\"');
+        var result = arr.Where(x => !string.IsNullOrEmpty(x)).ToList();
+        condition = result[0];
+        value = result[1];
     }
-    private static string FindInfoCondition(string condition, GeraldicSign row)
+    internal static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
-        string infoCondition = condition switch
+        FindValueFiterOneCondition(message, out string condition, out string value);
+        List<GeraldicSign> result = condition switch
         {
-            "Name" => row.Name,
-            "Type" => row.Type,
-            "Picture" => row.Picture,
-            "Description" => row.Description,
-            "Semantics" => row.Semantics,
-            "CertificateHolderName" => row.CertificateHolderName,
-            "RegistrationDate" => row.RegistrationDate,
-            "RegistrationNumber" => row.RegistrationNumber,
-            "Global_id" => row.Global_id,
-            _ => ""
-        };
-        return infoCondition;
+            "Name" => table.Where(row => row.Name == value).ToList(),
+            "Type" => table.Where(row => row.Type == value).ToList(),
+            "Picture" => table.Where(row => row.Picture == value).ToList(),
+            "Description" => table.Where(row => row.Description == value).ToList(),
+            "Semantics" => table.Where(row => row.Semantics == value).ToList(),
+            "CertificateHolderName" => table.Where(row => row.CertificateHolderName == value).ToList(),
+            "RegistrationDate" => table.Where(row => row.RegistrationDate == value).ToList(),
+            "RegistrationNumber" => table.Where(row => row.RegistrationNumber == value).ToList(),
+            "Global_id" => table.Where(row => row.Global_id == value).ToList(),
+            _ => new List<GeraldicSign>()
+        }; 
+        return result;
     }
-
-    internal static async Task<List<GeraldicSign>> FilterByOneConditionAsync(ITelegramBotClient botClient, Update update, string condition, List<GeraldicSign> table)
+    private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
     {
-        var chatId = update.Message.Chat.Id;
-        string selection = await FindValueSelectionAsync(botClient, chatId, condition);
-
-        List<GeraldicSign> newTable = new List<GeraldicSign>();
-        foreach (GeraldicSign row in table)
-        {
-            string infoCondition = FindInfoCondition(condition, row);
-            if (infoCondition == selection)
-            {
-                newTable.Add(row);
-            }
-        }
-
-        if (newTable.Count == 0)
-        {
-            await botClient.SendTextMessageAsync(
-                   chatId: chatId,
-                   text: "По данным значениям не нашлось результатов :(");
-        }
-        else
-        {
-            newTable.Insert(0, table[1]);
-            newTable.Insert(0, table[0]);
-        }
-        return newTable;
+        string[] arr = message.Remove(0, buttonText.Length).Split(' ', '\"');
+        var result = arr.Where(x => !string.IsNullOrEmpty(x)).ToList();
+        value1 = result[2];
+        value2 = result[3];
     }
-    internal static async Task<List<GeraldicSign>> FilterByTwoConditionsAsync(ITelegramBotClient botClient, Update update, string firstCondition, string secondCondition, List<GeraldicSign> table)
+    internal static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
     {
-        var chatId = update.Message.Chat.Id;
-        string firstSelection = await FindValueSelectionAsync(botClient, chatId, firstCondition);
-        string secondSelection = await FindValueSelectionAsync(botClient, chatId, secondCondition);
-
-        List<GeraldicSign> newTable = new List<GeraldicSign>();
-
-        foreach (GeraldicSign row in table)
-        {
-            string firstInfoCondition = FindInfoCondition(firstCondition, row);
-            string secondInfoCondition = FindInfoCondition(secondCondition, row);
-            if (firstInfoCondition == firstSelection && secondInfoCondition == secondSelection)
-            {
-                newTable.Add(row);
-            }
-        }
-
-        if (newTable.Count == 0)
-        {
-            await botClient.SendTextMessageAsync(
-                   chatId: chatId,
-                   text: "По данным значениям не нашлось результатов :(");
-        } else
-        {
-            newTable.Insert(0, table[1]); 
-            newTable.Insert(0, table[0]);
-        }
-        return newTable;
+        FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
+        List<GeraldicSign> result = table.Where(row => row.CertificateHolderName == value1 && row.RegistrationDate == value2).ToList();
+        return result;
     }
 }

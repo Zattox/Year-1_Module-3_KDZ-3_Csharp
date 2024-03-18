@@ -65,6 +65,29 @@ public class TelegramBotHelper
                 {
                     await DownloadData(update);
                 }
+
+                if (command.StartsWith(FilterButtonText1))
+                {
+                    List<GeraldicSign> editedTable =  FilteringData.FilterByOneCondition(table, command);
+                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
+                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                }
+                else if (command.StartsWith(FilterButtonText2))
+                {
+                    List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
+                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
+                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                }
+                else if (command.StartsWith(FilterButtonText3))
+                {
+                    List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command, FilterButtonText3);
+                    CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
+                    JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
+                }
+
                 switch (command)
                 {
                     case MenuButtonText1:
@@ -75,7 +98,7 @@ public class TelegramBotHelper
 
                     case MenuButtonText2:
                         {
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetFilterButtons());
+                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseFilterMessage);
                             break;
                         }
 
@@ -90,34 +113,7 @@ public class TelegramBotHelper
                             await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetOutputButtons());
                             break;
                         }
-
-                    case FilterButtonText1:
-                        {
-                            List<GeraldicSign> editedTable = await FilteringData.FilterByOneConditionAsync(botClient, update, "Type", table);
-                            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
-                            break;
-                        }
-
-                    case FilterButtonText2:
-                        {
-                            List<GeraldicSign> editedTable = await FilteringData.FilterByOneConditionAsync(botClient, update, "RegistrationDate", table);
-                            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
-                            break;
-                        }
-
-                    case FilterButtonText3:
-                        {
-                            List<GeraldicSign> editedTable = await FilteringData.FilterByTwoConditionsAsync(botClient, update, "CertificateHolderName", "RegistrationDate", table);
-                            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-                            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
-                            break;
-                        }
-
+                    
                     case SortingButtonText1:
                         {
                             List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
