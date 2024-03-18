@@ -127,7 +127,7 @@ internal class CSVProcessing
     internal static async Task<string> Download(ITelegramBotClient botClient, Update update)
     {
         var fileId = update.Message.Document.FileId;
-        string destinationFilePath = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\{fileId}.csv";
+        string destinationFilePath = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastInput.csv";
 
         await using Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
@@ -140,6 +140,6 @@ internal class CSVProcessing
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
-            document: InputFile.FromStream(stream: stream, fileName: $"table.csv"));
+            document: InputFile.FromStream(stream: stream, fileName: $"Table.csv"));
     }
 }

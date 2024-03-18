@@ -39,7 +39,7 @@ internal class JSONProcessing
     internal static async Task<string> Download(ITelegramBotClient botClient, Update update)
     {
         var fileId = update.Message.Document.FileId;
-        string destinationFilePath = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\{fileId}.json";
+        string destinationFilePath = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastInput.json";
 
         await using Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
@@ -52,6 +52,6 @@ internal class JSONProcessing
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
-            document: InputFile.FromStream(stream: stream, fileName: $"table.json"));
+            document: InputFile.FromStream(stream: stream, fileName: $"Table.json"));
     }
 }

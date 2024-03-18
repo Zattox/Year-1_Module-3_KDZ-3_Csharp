@@ -102,13 +102,13 @@ public class TelegramBotHelper
                 }
                 else if (command == "Скачать обработанный файл в JSON")
                 {
-                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\output.json";
+                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastOutput.json";
                     JSONProcessing.Write(pathNewFile, table);
                     await JSONProcessing.Upload(botClient, update, pathNewFile);
                 }
                 else if (command == "Скачать обработанный файл в СSV")
                 {
-                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\output.csv";
+                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastOutput.csv";
                     CSVProcessing.Write(table, pathNewFile);
                     await CSVProcessing.Upload(botClient, update, pathNewFile);
                 }
