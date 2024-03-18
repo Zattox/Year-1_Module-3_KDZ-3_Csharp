@@ -8,10 +8,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 public class TelegramBotHelper
 {
     public const int CountOfHeaders = 9;
+    private static string ExecutablePath = Methods.FindExecutablePath();
+
     private string token;
     private static string pathFile;
     private static List<GeraldicSign> table;
-    TelegramBotClient client;
+    private static TelegramBotClient botClient;
+
     public TelegramBotHelper(string token)
     {
         this.token = token;
@@ -29,12 +32,12 @@ public class TelegramBotHelper
         );
     }
 
-    private static async Task DownloadData(ITelegramBotClient botClient, Update update)
+    private static async Task DownloadData(Update update)
     {
         string fileName = update.Message.Document.FileName;
         if (fileName.EndsWith(".csv"))
         {
-            pathFile = await CSVProcessing.Download(botClient, update);
+            pathFile = await CSVProcessing.Download(botClient, update, ExecutablePath);
             table = CSVProcessing.Read(pathFile, out List<int> bugs);
             if (bugs.Count > 0)
             {
@@ -45,7 +48,7 @@ public class TelegramBotHelper
         }
         else if (fileName.EndsWith(".json"))
         {
-            pathFile = await JSONProcessing.Download(botClient, update);
+            pathFile = await JSONProcessing.Download(botClient, update, ExecutablePath);
             table = JSONProcessing.Read(pathFile);
             JSONProcessing.Write(pathFile, table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Данные загружены!");
@@ -56,7 +59,7 @@ public class TelegramBotHelper
         }
 
     }
-    private async void ProcessUpdateAsync(ITelegramBotClient botClient, Update update)
+    private async void ProcessUpdateAsync(Update update)
     {
         if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message) {
             var command = update.Message.Text;
@@ -64,7 +67,7 @@ public class TelegramBotHelper
             {
                 if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                 {
-                    await DownloadData(botClient, update);
+                    await DownloadData(update);
                 } else
                 {
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Для других функции для начала загрузите данные из файла!");
@@ -74,7 +77,7 @@ public class TelegramBotHelper
             {
                 if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
                 {
-                    await DownloadData(botClient, update);
+                    await DownloadData(update);
                 }
                 else if (command == "Фильтрация по Type") {
                     await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Фильтрация по Type", replyMarkup: GetButtons());
@@ -102,31 +105,31 @@ public class TelegramBotHelper
                 }
                 else if (command == "Скачать обработанный файл в JSON")
                 {
-                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastOutput.json";
+                    string pathNewFile = $"{ExecutablePath}\\LastOutput.json";
                     JSONProcessing.Write(pathNewFile, table);
                     await JSONProcessing.Upload(botClient, update, pathNewFile);
                 }
                 else if (command == "Скачать обработанный файл в СSV")
                 {
-                    string pathNewFile = $"C:\\Programming\\C#\\GIT\\GIT_Module-3_KDZ-3\\data\\LastOutput.csv";
+                    string pathNewFile = $"{ExecutablePath}\\LastOutput.csv";
                     CSVProcessing.Write(table, pathNewFile);
                     await CSVProcessing.Upload(botClient, update, pathNewFile);
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(update.Message.Chat.Id, "Такой функции нет", replyMarkup: GetButtons());
+                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, "Такой функции нет", replyMarkup: GetButtons());
                 }
             }
         } 
         else {
-            await client.SendTextMessageAsync(update.Message.Chat.Id, update.Type + " Not implemented!");
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, update.Type + " Not implemented!");
         }
     }
 
     public void GetUpdates()
     {
-        client = new TelegramBotClient(token);
-        var me = client.GetMeAsync().Result;
+        botClient = new TelegramBotClient(token);
+        var me = botClient.GetMeAsync().Result;
         if (me != null && !string.IsNullOrEmpty(me.Username))
         {
             int offset = 0;
@@ -134,12 +137,12 @@ public class TelegramBotHelper
             {
                 try
                 {
-                    var updates = client.GetUpdatesAsync(offset).Result;
+                    var updates = botClient.GetUpdatesAsync(offset).Result;
                     if (updates != null && updates.Count() > 0)
                     {
                         foreach (var update in updates)
                         {
-                            ProcessUpdateAsync(client, update);
+                            ProcessUpdateAsync(update);
                             offset = update.Id + 1;
                         }
                     }
