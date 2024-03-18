@@ -4,7 +4,6 @@ using Telegram.Bot.Types;
 using static AppConstants;
 internal class CSVProcessing
 {
-    const string Separator = "\";\"";
     private static string RemoveExtraCharacters(string line)
     {
         string answer = string.Empty;
@@ -135,6 +134,7 @@ internal class CSVProcessing
         await using Stream stream = System.IO.File.OpenRead(path);
         Message message = await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
-            document: InputFile.FromStream(stream: stream, fileName: $"Table.csv"));
+            document: InputFile.FromStream(stream: stream, fileName: $"Table.csv"),
+            replyMarkup: Buttons.GetMenuButtons());
     }
 }

@@ -50,8 +50,9 @@ internal class JSONProcessing
     internal static async Task Upload(ITelegramBotClient botClient, Update update, string path)
     {
         await using Stream stream = System.IO.File.OpenRead(path);
-        Message message = await botClient.SendDocumentAsync(
+        await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
-            document: InputFile.FromStream(stream: stream, fileName: $"Table.json"));
+            document: InputFile.FromStream(stream: stream, fileName: $"Table.json"),
+            replyMarkup: Buttons.GetMenuButtons());
     }
 }
