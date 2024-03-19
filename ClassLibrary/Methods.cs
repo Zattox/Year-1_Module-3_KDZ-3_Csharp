@@ -7,7 +7,7 @@ public class Methods
     private readonly static string logFilePath;
 
     /// <summary>
-    /// Статический конструктор для иницилизации логгера и создания, нужных для работы программы, директорий.
+    /// Статический конструктор для иницилизации логера и создания, нужных для работы программы, директорий.
     /// </summary>
     static Methods()
     {
@@ -32,7 +32,7 @@ public class Methods
     }
 
     /// <summary>
-    /// Создания нужных директрорий для работы программы. Поиск абсолютных путей до них.
+    /// Создания нужных директорий для работы программы. Поиск абсолютных путей до них.
     /// </summary>
     public static void CreateDirectories()
     {
@@ -43,12 +43,11 @@ public class Methods
         Process currentProcess = Process.GetCurrentProcess();
         ExecutablePath = currentProcess.MainModule.FileName;
 
-        // Поднятие вверх на нужное количетсво директорий.
-        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
-        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
-        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
-        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
-        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        // Поднятие вверх по директориям на уровень папки проекта.
+        for (int i = 0; i < 5; ++i)
+        {
+            ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        }
 
         // Создание директории \data. (Хранение всех файлов с данными)
         DataPath = ExecutablePath + $"{separatorSym}data";
