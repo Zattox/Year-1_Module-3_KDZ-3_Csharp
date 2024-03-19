@@ -5,7 +5,6 @@ using static AppConstants;
 public class TelegramBotHelper
 {
     private string token; // Токен для обращения к боту.
-    private string pathFile;
     private static Stream lastJsonDownload, lastCsvDownload;
     private static Stream lastJsonUpload, lastCsvUpload;
     private static List<GeraldicSign> table; // Таблица с данными из последнего загруженного файла.
@@ -25,16 +24,16 @@ public class TelegramBotHelper
         string fileName = update.Message.Document.FileName;
         if (fileName.EndsWith(".csv"))
         {
-            pathFile = await CSVProcessing.Download(botClient, update, ExecutablePath);
-            table = CSVProcessing.Read(pathFile, out List<int> bugs);
+            lastCsvDownload = await CSVProcessing.Download(botClient, update);
+            table = CSVProcessing.Read(lastCsvDownload, out List<int> bugs);
             if (bugs.Count > 0)
                 await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: Buttons.GetMenuButtons());
-            CSVProcessing.Write(table, pathFile);
+            lastCsvUpload = CSVProcessing.Write(table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
         else if (fileName.EndsWith(".json"))
         {
-            lastJsonDownload = await JSONProcessing.Download(botClient, update, ExecutablePath);
+            lastJsonDownload = await JSONProcessing.Download(botClient, update);
             table = JSONProcessing.Read(lastJsonDownload);
             lastJsonUpload = JSONProcessing.Write(table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
@@ -60,7 +59,7 @@ public class TelegramBotHelper
         }
         else
         {
-            CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
+            lastCsvUpload = CSVProcessing.Write(editedTable);
             lastJsonUpload = JSONProcessing.Write(editedTable);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
@@ -172,7 +171,7 @@ public class TelegramBotHelper
 
                     case OutputButtonText2:
                         {
-                            await CSVProcessing.Upload(botClient, update, $"{ExecutablePath}\\LastOutput.csv");
+                            await CSVProcessing.Upload(botClient, update, lastCsvUpload);
                             break;
                         }
 

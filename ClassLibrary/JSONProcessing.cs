@@ -48,7 +48,7 @@ public class JSONProcessing
         };
         string jsonString = JsonSerializer.Serialize(table, options);
 
-        string destinationFilePath = OutputJSONPath + $"\\output{countOfOutput}.json";
+        string destinationFilePath = OutputJSONPath + $"\\output{countOfOutput++}.json";
         Stream fileStream = System.IO.File.Create(destinationFilePath);
         TextWriter oldOut = Console.Out;
         using (StreamWriter sw = new StreamWriter(fileStream, Encoding.UTF8))
@@ -59,7 +59,6 @@ public class JSONProcessing
         Console.SetOut(oldOut);
 
         fileStream.Close();
-        ++countOfOutput;
 
         Methods.WriteStopLog(nameof(Write));
         return new FileStream(destinationFilePath, FileMode.Open);
@@ -71,7 +70,7 @@ public class JSONProcessing
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
     /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
     /// <returns>Абсолютный путь до скаченного файла.</returns>
-    public static async Task<Stream> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
+    public static async Task<Stream> Download(ITelegramBotClient botClient, Update update)
     {
         Methods.WriteStartLog(nameof(Download));
        

@@ -4,6 +4,8 @@ using Telegram.Bot.Types;
 using static AppConstants;
 public class CSVProcessing
 {
+    private static int countOfOutput = 1;
+
     /// <summary>
     /// Удаляет ненужные символы из строки.
     /// </summary>
@@ -79,12 +81,13 @@ public class CSVProcessing
     /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
     /// <exception cref="ArgumentNullException">Пустые заголовки файла.</exception>
     /// <exception cref="ArgumentException">Неверное количество заголовков файла.</exception>
-    public static List<GeraldicSign> Read(string filePath, out List<int> bugs)
+    public static List<GeraldicSign> Read(Stream stream, out List<int> bugs)
     {
         Methods.WriteStartLog(nameof(Read));
+
         List<GeraldicSign> table = new List<GeraldicSign>();
         bugs = new List<int>(0);
-        using (StreamReader sr = new StreamReader(filePath))
+        using (StreamReader sr = new StreamReader(stream))
         {
             string curLine = sr.ReadLine();
             List<string> headersEng = new List<string>(DataCorrection(curLine.Split(Separator)));
@@ -128,6 +131,8 @@ public class CSVProcessing
                 table.Add(new GeraldicSign(row));
             }
         }
+        stream.Close();
+
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
@@ -136,17 +141,23 @@ public class CSVProcessing
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
     /// <param name="path">Путь до выходного файла.</param>
-    public static void Write(List<GeraldicSign> table, string path)
+    public static Stream Write(List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
-        using (var sw = new StreamWriter(path, false, Encoding.UTF8))
+
+        string destinationFilePath = OutputCSVPath + $"\\output{countOfOutput++}.csv";
+        Stream fileStream = System.IO.File.Create(destinationFilePath);
+        using (var sw = new StreamWriter(fileStream, Encoding.UTF8))
         {
             foreach (var elem in table)
             {
                 sw.WriteLine(elem.ToString());
             }
         }
+        fileStream.Close();
+
         Methods.WriteStopLog(nameof(Write));
+        return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
     /// Скачивание CSV файла из телеграмм чата с ботом.
@@ -155,17 +166,19 @@ public class CSVProcessing
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
     /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
     /// <returns>Абсолютный путь до скаченного файла.</returns>
-    public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
+    public static async Task<Stream> Download(ITelegramBotClient botClient, Update update)
     {
         Methods.WriteStartLog(nameof(Download));
-        var fileId = update.Message.Document.FileId;
-        string destinationFilePath = $"{ExecutablePath}\\LastInput.csv";
 
-        await using Stream fileStream = System.IO.File.Create(destinationFilePath);
+        var fileId = update.Message.Document.FileId;
+        string destinationFilePath = DataPath + $"\\LastInput.csv";
+
+        Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
         fileStream.Close();
+
         Methods.WriteStopLog(nameof(Download));
-        return destinationFilePath;
+        return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
     /// Отправка CSV файла в телеграмм чат с ботом.
@@ -173,14 +186,15 @@ public class CSVProcessing
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
     /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
-    public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
+    public static async Task Upload(ITelegramBotClient botClient, Update update, Stream stream)
     {
         Methods.WriteStartLog(nameof(Upload));
-        await using Stream stream = System.IO.File.OpenRead(path);
+
         Message message = await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
             document: InputFile.FromStream(stream: stream, fileName: $"Table.csv"),
             replyMarkup: Buttons.GetMenuButtons());
+
         Methods.WriteStopLog(nameof(Upload));
     }
 }
