@@ -13,14 +13,7 @@ public class CSVProcessing
     /// <returns>Отформатированная строка.</returns>
     private static string RemoveExtraCharacters(string line)
     {
-        string answer = string.Empty;
-        for (int i = 0; i < line.Length; ++i)
-        {
-            if (line[i] != '\"' && line[i] != ';')
-            {
-                answer += line[i];
-            }
-        }
+        string answer = new string(line.Where(sym => sym != '\"' && sym != ';').ToArray());
         return answer;
     }
 
