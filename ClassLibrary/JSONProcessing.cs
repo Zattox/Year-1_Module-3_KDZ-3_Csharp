@@ -3,19 +3,23 @@ using Telegram.Bot.Types;
 using Telegram.Bot;
 using System.Text;
 using System.Text.Encodings.Web;
+using static AppConstants;
 public class JSONProcessing
 {
+    private static int countOfOutput = 1;
+
     /// <summary>
     /// Чтение данных из уже загруженного JSON файла.
     /// </summary>
-    /// <param name="filePath">Путь до существуещего JSON файла.</param>
+    /// <param name="stream">Поток существуещего JSON файла.</param>
     /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
-    public static List<GeraldicSign> Read(string filePath)
+    public static List<GeraldicSign> Read(Stream stream)
     {
         Methods.WriteStartLog(nameof(Read));
+        
         string text = "";
         TextReader oldIn = Console.In;
-        using (StreamReader sr = new StreamReader(filePath))
+        using (StreamReader sr = new StreamReader(stream))
         {
             Console.SetIn(sr);
             text = sr.ReadToEnd();
@@ -23,6 +27,8 @@ public class JSONProcessing
         Console.SetIn(oldIn);
 
         var table = JsonSerializer.Deserialize<List<GeraldicSign>>(text);
+        stream.Close();
+
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
@@ -30,10 +36,11 @@ public class JSONProcessing
     /// Запись данных из таблицы в JSON файл.
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
-    /// <param name="path">Путь до выходного файла.</param>
-    public static void Write(string filePath, List<GeraldicSign> table)
+    /// <returns>Поток JSON файла.</returns>
+    public static Stream Write(List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
+       
         var options = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -41,14 +48,21 @@ public class JSONProcessing
         };
         string jsonString = JsonSerializer.Serialize(table, options);
 
+        string destinationFilePath = OutputJSONPath + $"\\output{countOfOutput}.json";
+        Stream fileStream = System.IO.File.Create(destinationFilePath);
         TextWriter oldOut = Console.Out;
-        using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+        using (StreamWriter sw = new StreamWriter(fileStream, Encoding.UTF8))
         {
             Console.SetOut(sw);
             Console.Write(jsonString);
         }
         Console.SetOut(oldOut);
+
+        fileStream.Close();
+        ++countOfOutput;
+
         Methods.WriteStopLog(nameof(Write));
+        return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
     /// Скачивание JSON файла из телеграмм чата с ботом.
@@ -57,17 +71,19 @@ public class JSONProcessing
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
     /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
     /// <returns>Абсолютный путь до скаченного файла.</returns>
-    public static async Task<string> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
+    public static async Task<Stream> Download(ITelegramBotClient botClient, Update update, string ExecutablePath)
     {
         Methods.WriteStartLog(nameof(Download));
+       
         var fileId = update.Message.Document.FileId;
-        string destinationFilePath = $"{ExecutablePath}\\LastInput.json";
+        string destinationFilePath =  DataPath + $"\\LastInput.json";
 
-        await using Stream fileStream = System.IO.File.Create(destinationFilePath);
+        Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
         fileStream.Close();
+
         Methods.WriteStopLog(nameof(Download));
-        return destinationFilePath;
+        return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
     /// Отправка JSON файла в телеграмм чат с ботом.
@@ -75,14 +91,15 @@ public class JSONProcessing
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
     /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
-    public static async Task Upload(ITelegramBotClient botClient, Update update, string path)
+    public static async Task Upload(ITelegramBotClient botClient, Update update, Stream stream)
     {
         Methods.WriteStartLog(nameof(Upload));
-        await using Stream stream = System.IO.File.OpenRead(path);
+
         await botClient.SendDocumentAsync(
             chatId: update.Message.Chat.Id,
             document: InputFile.FromStream(stream: stream, fileName: $"Table.json"),
             replyMarkup: Buttons.GetMenuButtons());
+        
         Methods.WriteStopLog(nameof(Upload));
     }
 }

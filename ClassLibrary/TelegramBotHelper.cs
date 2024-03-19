@@ -1,14 +1,15 @@
-﻿using Telegram.Bot;
+﻿using System.Diagnostics;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using static AppConstants;
 public class TelegramBotHelper
 {
     private string token; // Токен для обращения к боту.
-    private static string pathFile; // Абсолютный путь до последнего загруженного файла с данными.
+    private string pathFile;
+    private static Stream lastJsonDownload, lastCsvDownload;
+    private static Stream lastJsonUpload, lastCsvUpload;
     private static List<GeraldicSign> table; // Таблица с данными из последнего загруженного файла.
     private static TelegramBotClient botClient;
-    private static string ExecutablePath = Methods.FindExecutablePath(); // Абсолютный путь до папки data.
-
     public TelegramBotHelper(string token)
     {
         this.token = token;
@@ -20,6 +21,7 @@ public class TelegramBotHelper
     private async Task DownloadData(Update update)
     {
         Methods.WriteStartLog(nameof(DownloadData));
+
         string fileName = update.Message.Document.FileName;
         if (fileName.EndsWith(".csv"))
         {
@@ -32,15 +34,16 @@ public class TelegramBotHelper
         }
         else if (fileName.EndsWith(".json"))
         {
-            pathFile = await JSONProcessing.Download(botClient, update, ExecutablePath);
-            table = JSONProcessing.Read(pathFile);
-            JSONProcessing.Write(pathFile, table);
+            lastJsonDownload = await JSONProcessing.Download(botClient, update, ExecutablePath);
+            table = JSONProcessing.Read(lastJsonDownload);
+            lastJsonUpload = JSONProcessing.Write(table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
         else
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
+
         Methods.WriteStopLog(nameof(DownloadData));
     }
     /// <summary>
@@ -58,7 +61,7 @@ public class TelegramBotHelper
         else
         {
             CSVProcessing.Write(editedTable, $"{ExecutablePath}\\LastOutput.csv");
-            JSONProcessing.Write($"{ExecutablePath}\\LastOutput.json", editedTable);
+            lastJsonUpload = JSONProcessing.Write(editedTable);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
         Methods.WriteStopLog(nameof(CompleteEditingTask));
@@ -163,7 +166,7 @@ public class TelegramBotHelper
 
                     case OutputButtonText1:
                         {
-                            await JSONProcessing.Upload(botClient, update, $"{ExecutablePath}\\LastOutput.json");
+                            await JSONProcessing.Upload(botClient, update, lastJsonUpload);
                             break;
                         }
 
@@ -191,6 +194,7 @@ public class TelegramBotHelper
     public void GetUpdates()
     {
         Methods.WriteStartLog(nameof(GetUpdates));
+
         botClient = new TelegramBotClient(token);
         var me = botClient.GetMeAsync().Result;
         if (me != null && !string.IsNullOrEmpty(me.Username))
@@ -217,6 +221,7 @@ public class TelegramBotHelper
                 Thread.Sleep(1000);
             }
         }
+
         Methods.WriteStopLog(nameof(GetUpdates));
     }
 }
