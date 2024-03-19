@@ -1,6 +1,4 @@
-﻿using System.Net.NetworkInformation;
-
-public class AppConstants
+﻿public class AppConstants
 {
     // Общие константы решения.
     public const int CountOfHeaders = 9; // Количество столбцов/заголовков в csv файле.
