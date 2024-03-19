@@ -30,12 +30,14 @@ public class TelegramBotHelper
             if (bugs.Count > 0)
                 await botClient.SendTextMessageAsync(update.Message.Chat.Id, $"Обнаружены ошибки в {bugs.Count} строках, они были пропущены при записи", replyMarkup: Buttons.GetMenuButtons());
             lastCsvUpload = CSVProcessing.Write(table);
+            lastJsonUpload = JSONProcessing.Write(table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
         else if (fileName.EndsWith(".json"))
         {
             lastJsonDownload = await JSONProcessing.Download(botClient, update);
             table = JSONProcessing.Read(lastJsonDownload);
+            lastCsvUpload = CSVProcessing.Write(table);
             lastJsonUpload = JSONProcessing.Write(table);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
