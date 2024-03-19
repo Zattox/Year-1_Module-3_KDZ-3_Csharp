@@ -36,6 +36,9 @@ public class Methods
     /// </summary>
     public static void CreateDirectories()
     {
+        // Cимвол, задаваемый платформой, для разделения уровней папок в строке пути.
+        char separatorSym = Path.DirectorySeparatorChar;
+
         // Поиск абсолютного пути до запускаемого файла проекта.
         Process currentProcess = Process.GetCurrentProcess();
         ExecutablePath = currentProcess.MainModule.FileName;
@@ -48,28 +51,28 @@ public class Methods
         ExecutablePath = Path.GetDirectoryName(ExecutablePath);
 
         // Создание директории \data. (Хранение всех файлов с данными)
-        DataPath = ExecutablePath + "\\data";
+        DataPath = ExecutablePath + $"{separatorSym}data";
         if (!Directory.Exists(DataPath))
         {
             Directory.CreateDirectory(DataPath);
         }
 
         // Создание директории \data\JSONOutput. (Хранение файлов для вывода данных с .json)
-        OutputJSONPath = DataPath + "\\JSONOutput";
+        OutputJSONPath = DataPath + $"{separatorSym}JSONOutput";
         if (!Directory.Exists(OutputJSONPath))
         {
             Directory.CreateDirectory(OutputJSONPath);
         }
 
         // Создание директории \data\CSVOutput.(Хранение файлов для вывода данных с .csv)
-        OutputCSVPath = DataPath + "\\CSVOutput";
+        OutputCSVPath = DataPath + $"{separatorSym}CSVOutput";
         if (!Directory.Exists(OutputCSVPath))
         {
             Directory.CreateDirectory(OutputCSVPath);
         }
 
         // Создание директории \var.(Хранение файлов для вывода логирования)
-        LogPath = ExecutablePath + "\\var";
+        LogPath = ExecutablePath + $"{separatorSym}var";
         if (!Directory.Exists(LogPath))
         {
             Directory.CreateDirectory(LogPath);
