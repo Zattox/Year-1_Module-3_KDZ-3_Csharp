@@ -19,7 +19,7 @@
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
     /// <param name="message">Сообщение, содержащие данные о формате выборки.</param>
-    /// <returns></returns>
+    /// <returns>Отфильтрованная таблица.</returns>
     public static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         Methods.WriteStartLog(nameof(FilterByOneCondition));
@@ -47,12 +47,12 @@
     /// Разделение строки по заданному формату.
     /// </summary>
     /// <param name="message">Строка для разделение.</param>
-    /// <param name="buttonText">Текст с выбранной кнопки.</param>
+    /// <param name="formatText">Текст для определения формата строки.</param>
     /// <param name="value1">Значение поля для первого условия.</param>
     /// <param name="value2">Значение поля для второго условия.</param>
-    private static void FindValueFiterTwoCondition(string message, string buttonText, out string value1, out string value2)
+    private static void FindValueFiterTwoCondition(string message, string formatText, out string value1, out string value2)
     {
-        string[] arr = message.Remove(0, buttonText.Length).Split('\"');
+        string[] arr = message.Remove(0, formatText.Length).Split('\"');
         var result = arr.Where(x => x.Length > 1).ToList();
         value1 = result[0];
         value2 = result[1];
@@ -62,12 +62,11 @@
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
     /// <param name="message">Сообщение, содержащие данные о формате выборки.</param>
-    /// <param name="buttonText">Текст с выбранной кнопки.</param>
-    /// <returns></returns>
-    public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message, string buttonText)
+    /// <returns>Отфильтрованная таблица</returns>
+    public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message)
     {
         Methods.WriteStartLog(nameof(FilterByTwoConditions));
-        FindValueFiterTwoCondition(message, buttonText, out string value1, out string value2);
+        FindValueFiterTwoCondition(message, AppConstants.FilterButtonText3, out string value1, out string value2);
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
 

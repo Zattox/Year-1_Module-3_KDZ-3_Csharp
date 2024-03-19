@@ -117,7 +117,7 @@ public class TelegramBotHelper
                 }
                 else if (command.StartsWith(FilterButtonText3))
                 {
-                    List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command, FilterButtonText3);
+                    List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command);
                     await CompleteEditingTask(update, editedTable);
                     return;
                 }

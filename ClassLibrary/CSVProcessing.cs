@@ -27,7 +27,7 @@ public class CSVProcessing
     /// Убирает лишние пустые строки.
     /// </summary>
     /// <param name="data">Изначальный набор строк.</param>
-    /// <returns>Набор строк длинной равной количеству заголовков.</returns>
+    /// <returns>Набор строк с длинной равной количеству заголовков.</returns>
     private static List<string> DataCorrection(string[] data)
     {
         List<string> result = new List<string>();
@@ -76,7 +76,7 @@ public class CSVProcessing
     /// <summary>
     /// Чтение данных из уже загруженного CSV файла.
     /// </summary>
-    /// <param name="filePath">Путь до существуещего CSV файла.</param>
+    /// <param name="stream">Поток до существуещего CSV файла.</param>
     /// <param name="bugs">Список индексов некорректных строчек.</param>
     /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
     /// <exception cref="ArgumentNullException">Пустые заголовки файла.</exception>
@@ -85,8 +85,10 @@ public class CSVProcessing
     {
         Methods.WriteStartLog(nameof(Read));
 
-        List<GeraldicSign> table = new List<GeraldicSign>();
+
+        int indOfLine = 1;
         bugs = new List<int>(0);
+        List<GeraldicSign> table = new List<GeraldicSign>();
         using (StreamReader sr = new StreamReader(stream))
         {
             string curLine = sr.ReadLine();
@@ -95,6 +97,7 @@ public class CSVProcessing
             {
                 throw new ArgumentNullException("Пустые английские заголовки");
             }
+            ++indOfLine;
 
             curLine = sr.ReadLine();
             List<string> headersRus = new List<string>(DataCorrection(curLine.Split(Separator)));
@@ -102,13 +105,13 @@ public class CSVProcessing
             {
                 throw new ArgumentNullException("Пустые русские заголовки");
             }
+            ++indOfLine;
 
             if (headersEng.Count != CountOfHeaders || headersRus.Count != CountOfHeaders)
             {
                 throw new ArgumentException("Неверное количество заголовков");
             }
 
-            int indOfLine = 3;
             List<List<string>> stringData = new List<List<string>>();
             while ((curLine = sr.ReadLine()) is not null)
             {
@@ -140,7 +143,7 @@ public class CSVProcessing
     /// Запись данных из таблицы в CSV файл.
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
-    /// <param name="path">Путь до выходного файла.</param>
+    /// <returns>Поток до CSV файла.</returns>
     public static Stream Write(List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
@@ -160,12 +163,11 @@ public class CSVProcessing
         return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
-    /// Скачивание CSV файла из телеграмм чата с ботом.
+    /// Скачивание JSON файла из телеграмм чата с ботом.
     /// </summary>
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
-    /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
-    /// <returns>Абсолютный путь до скаченного файла.</returns>
+    /// <returns>Поток до скаченного файла.</returns>
     public static async Task<Stream> Download(ITelegramBotClient botClient, Update update)
     {
         Methods.WriteStartLog(nameof(Download));
@@ -181,11 +183,11 @@ public class CSVProcessing
         return new FileStream(destinationFilePath, FileMode.Open);
     }
     /// <summary>
-    /// Отправка CSV файла в телеграмм чат с ботом.
+    /// Отправка JSON файла в телеграмм чат с ботом.
     /// </summary>
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
-    /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
+    /// <param name="stream">Поток файла, который нужно отправить.</param>
     public static async Task Upload(ITelegramBotClient botClient, Update update, Stream stream)
     {
         Methods.WriteStartLog(nameof(Upload));

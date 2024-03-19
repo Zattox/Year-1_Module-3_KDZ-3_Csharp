@@ -3,7 +3,7 @@ using static AppConstants;
 public class Buttons
 {
     /// <summary>
-    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора режима сортировки.
+    /// Отрисовывает кликабельные кнопки в телеграмм чате необходимые для выбора режима сортировки.
     /// </summary>
     internal static IReplyMarkup? GetSortingButtons()
     {
@@ -11,13 +11,12 @@ public class Buttons
             new List<List<KeyboardButton>>
             {
                 new List<KeyboardButton> { new KeyboardButton(SortingButtonText1) },
-                new List<KeyboardButton> { new KeyboardButton(SortingButtonText2) },
                 new List<KeyboardButton> { new KeyboardButton(SortingButtonText2) }
             }
         );
     }
     /// <summary>
-    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора режима вывода данных.
+    /// Отрисовывает кликабельные кнопки в телеграмм чате необходимые для выбора режима вывода данных.
     /// </summary>
     internal static IReplyMarkup? GetOutputButtons()
     {
@@ -30,7 +29,7 @@ public class Buttons
         );
     }
     /// <summary>
-    /// Отрисовывает кликабельные кнопки в телеграмм чате неоюходимые для выбора команды бота.
+    /// Отрисовывает кликабельные кнопки в телеграмм чате необходимые для выбора команды бота.
     /// </summary>
     internal static IReplyMarkup? GetMenuButtons()
     {

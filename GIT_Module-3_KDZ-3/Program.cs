@@ -6,7 +6,7 @@
         {
             TelegramBotHelper hlp = new TelegramBotHelper(AppConstants.Token); // Иницилизация класса для взаимодействия с ботом.
             Methods log = new Methods(); // Иницилизация класса для логированния.
-            hlp.GetUpdates();
+            hlp.GetUpdates(); // Старт работы с ботом.
         }
         catch (Exception ex)
         {

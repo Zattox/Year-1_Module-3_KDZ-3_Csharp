@@ -11,7 +11,7 @@ public class JSONProcessing
     /// <summary>
     /// Чтение данных из уже загруженного JSON файла.
     /// </summary>
-    /// <param name="stream">Поток существуещего JSON файла.</param>
+    /// <param name="stream">Поток до существуещего JSON файла.</param>
     /// <returns>Считанные данные в виде List<GeraldicSign>.</returns>
     public static List<GeraldicSign> Read(Stream stream)
     {
@@ -36,7 +36,7 @@ public class JSONProcessing
     /// Запись данных из таблицы в JSON файл.
     /// </summary>
     /// <param name="table">Таблица с данными.</param>
-    /// <returns>Поток JSON файла.</returns>
+    /// <returns>Поток до JSON файла.</returns>
     public static Stream Write(List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
@@ -68,8 +68,7 @@ public class JSONProcessing
     /// </summary>
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
-    /// <param name="ExecutablePath">Путь до директории куда необходимо скачать файл.</param>
-    /// <returns>Абсолютный путь до скаченного файла.</returns>
+    /// <returns>Поток до скаченного файла.</returns>
     public static async Task<Stream> Download(ITelegramBotClient botClient, Update update)
     {
         Methods.WriteStartLog(nameof(Download));
@@ -89,7 +88,7 @@ public class JSONProcessing
     /// </summary>
     /// <param name="botClient">Обозначение нужного чата с выбранным телеграмм ботом.</param>
     /// <param name="update">Последнее сообщение пользователя из этого чата.</param>
-    /// <param name="path">Абсолютный путь до файла, который нужно отправить.</param>
+    /// <param name="stream">Поток файла, который нужно отправить.</param>
     public static async Task Upload(ITelegramBotClient botClient, Update update, Stream stream)
     {
         Methods.WriteStartLog(nameof(Upload));
