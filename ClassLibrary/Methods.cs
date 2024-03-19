@@ -1,24 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using static AppConstants;
 public class Methods
 {
     private readonly static ILogger<Methods> logger;
     private readonly static string logFilePath;
 
     /// <summary>
-    /// Статический конструктор для иницилизации логгера.
+    /// Статический конструктор для иницилизации логгера и создания нужных директорий.
     /// </summary>
     static Methods()
     {
-        logFilePath = FindExecutablePath();
-        logFilePath = Path.GetDirectoryName(logFilePath);
+        CreateDirectories();
 
-        logFilePath += "\\var";
-        if (!Directory.Exists(logFilePath))
-        {
-            Directory.CreateDirectory(logFilePath);
-        }
-        logFilePath += $"\\Console_log_{DateTime.Now:dd-MM}.txt";
+        logFilePath += LogPath + $"\\Console_log_{DateTime.Now:dd-MM}.txt";
         if (!File.Exists(logFilePath))
         {
             var st = File.Create(logFilePath);
@@ -39,27 +34,46 @@ public class Methods
     /// Поиск абсолютного пути до директории на уровне папки проекта.
     /// </summary>
     /// <returns>Абсолютный путь до директории на уровне папки проекта.</returns>
-    public static string FindExecutablePath()
+    public static void CreateDirectories()
     {
         // Поиск абсолютного пути до запускаемого файла проекта.
         Process currentProcess = Process.GetCurrentProcess();
-        string executablePath = currentProcess.MainModule.FileName;
+        ExecutablePath = currentProcess.MainModule.FileName;
 
         // Поднятие вверх на нужное количетсво директорий.
-        executablePath = Path.GetDirectoryName(executablePath);
-        executablePath = Path.GetDirectoryName(executablePath);
-        executablePath = Path.GetDirectoryName(executablePath);
-        executablePath = Path.GetDirectoryName(executablePath);
-        executablePath = Path.GetDirectoryName(executablePath);
+        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
+        ExecutablePath = Path.GetDirectoryName(ExecutablePath);
 
-        // Спуск в нужную директорию, при отсутствии создание этой директории.
-        executablePath += "\\data";
-        if (!Directory.Exists(executablePath))
+        // Создание директории \data. (Хранение всех файлов с данными)
+        DataPath = ExecutablePath + "\\data";
+        if (!Directory.Exists(DataPath))
         {
-            Directory.CreateDirectory(executablePath);
+            Directory.CreateDirectory(DataPath);
         }
 
-        return executablePath;
+        // Создание директории \data\JSONOutput. (Хранение файлов для вывода данных с .json)
+        OutputJSONPath = DataPath + "\\JSONOutput";
+        if (!Directory.Exists(OutputJSONPath))
+        {
+            Directory.CreateDirectory(OutputJSONPath);
+        }
+
+        // Создание директории \data\CSVOutput.(Хранение файлов для вывода данных с .csv)
+        OutputCSVPath = DataPath + "\\CSVOutput";
+        if (!Directory.Exists(OutputCSVPath))
+        {
+            Directory.CreateDirectory(OutputCSVPath);
+        }
+
+        // Создание директории \var.(Хранение файлов для вывода логирования)
+        LogPath = ExecutablePath + "\\var";
+        if (!Directory.Exists(LogPath))
+        {
+            Directory.CreateDirectory(LogPath);
+        }
     }
 
     /// <summary>
