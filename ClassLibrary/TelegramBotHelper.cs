@@ -111,13 +111,7 @@ public class TelegramBotHelper
                 }
 
                 // Если пользователь хочет произвести выборку, ему необходимо в нужном формате прислать запрос.
-                if (command.StartsWith(FilterButtonText1))
-                {
-                    List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
-                    await CompleteEditingTask(update, editedTable);
-                    return;
-                }
-                else if (command.StartsWith(FilterButtonText2))
+                if (command.StartsWith(FilterButtonText1) || command.StartsWith(FilterButtonText2))
                 {
                     List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
                     await CompleteEditingTask(update, editedTable);
