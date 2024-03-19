@@ -13,7 +13,7 @@
     public static string LogPath = ""; // Путь до папки, где хранятся файлы для логирования.
 
     // Тексты для кнопок основного меню.
-    public const string MenuButtonText1 = "Загрузить новый файл"; 
+    public const string MenuButtonText1 = "Загрузить новый файл";
     public const string MenuButtonText2 = "Выборка";
     public const string MenuButtonText3 = "Сортировка";
     public const string MenuButtonText4 = "Скачать последний обработанный файл";

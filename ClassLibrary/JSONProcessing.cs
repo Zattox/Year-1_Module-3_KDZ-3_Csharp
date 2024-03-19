@@ -16,7 +16,7 @@ public class JSONProcessing
     public static List<GeraldicSign> Read(Stream stream)
     {
         Methods.WriteStartLog(nameof(Read));
-        
+
         string text = "";
         TextReader oldIn = Console.In;
         using (StreamReader sr = new StreamReader(stream))
@@ -41,7 +41,7 @@ public class JSONProcessing
     public static Stream Write(List<GeraldicSign> table)
     {
         Methods.WriteStartLog(nameof(Write));
-       
+
         var options = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -74,9 +74,9 @@ public class JSONProcessing
     public static async Task<Stream> Download(ITelegramBotClient botClient, Update update)
     {
         Methods.WriteStartLog(nameof(Download));
-       
+
         var fileId = update.Message.Document.FileId;
-        string destinationFilePath =  DataPath + $"\\LastInput.json";
+        string destinationFilePath = DataPath + $"\\LastInput.json";
 
         Stream fileStream = System.IO.File.Create(destinationFilePath);
         await botClient.GetInfoAndDownloadFileAsync(fileId: fileId, destination: fileStream);
@@ -100,7 +100,7 @@ public class JSONProcessing
             chatId: update.Message.Chat.Id,
             document: InputFile.FromStream(stream: stream, fileName: $"Table.json"),
             replyMarkup: Buttons.GetMenuButtons());
-        
+
         Methods.WriteStopLog(nameof(Upload));
     }
 }

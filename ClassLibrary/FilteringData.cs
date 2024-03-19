@@ -27,7 +27,7 @@
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
         FindValueFiterOneCondition(message, out string condition, out string value);
-        
+
         // Убираем заголовки из таблицы.
         result.Remove(table[0]);
         result.Remove(table[1]);

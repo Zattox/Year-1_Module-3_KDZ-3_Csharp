@@ -84,7 +84,7 @@
         // Убираем заголовки из таблицы.
         sortedData.Remove(data[0]);
         sortedData.Remove(data[1]);
-         
+
         sortedData.Sort(Comparator);
         if (flag)
             sortedData.Reverse();
