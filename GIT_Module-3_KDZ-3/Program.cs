@@ -1,4 +1,10 @@
-﻿internal class Program
+﻿/*
+  Студент:     Тепляков Владислав Витальевич  
+  Группа:      БПИ2310-2
+  Задача:      Контрольное домашнее задание 3, модуль 3
+  Вариант:     8
+*/
+internal class Program
 {
     static void Main(string[] args)
     {
