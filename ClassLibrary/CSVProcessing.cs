@@ -23,6 +23,7 @@ public class CSVProcessing
         }
         return answer;
     }
+
     /// <summary>
     /// Убирает лишние пустые строки.
     /// </summary>
@@ -41,6 +42,7 @@ public class CSVProcessing
         }
         return result;
     }
+
     /// <summary>
     /// Проверка правильности типов полей строки.
     /// </summary>
@@ -73,6 +75,7 @@ public class CSVProcessing
         }
         return true;
     }
+
     /// <summary>
     /// Чтение данных из уже загруженного CSV файла.
     /// </summary>
@@ -84,7 +87,6 @@ public class CSVProcessing
     public static List<GeraldicSign> Read(Stream stream, out List<int> bugs)
     {
         Methods.WriteStartLog(nameof(Read));
-
 
         int indOfLine = 1;
         bugs = new List<int>(0);
@@ -139,6 +141,7 @@ public class CSVProcessing
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
+
     /// <summary>
     /// Запись данных из таблицы в CSV файл.
     /// </summary>
@@ -162,6 +165,7 @@ public class CSVProcessing
         Methods.WriteStopLog(nameof(Write));
         return new FileStream(destinationFilePath, FileMode.Open);
     }
+
     /// <summary>
     /// Скачивание JSON файла из телеграмм чата с ботом.
     /// </summary>
@@ -182,6 +186,7 @@ public class CSVProcessing
         Methods.WriteStopLog(nameof(Download));
         return new FileStream(destinationFilePath, FileMode.Open);
     }
+
     /// <summary>
     /// Отправка JSON файла в телеграмм чат с ботом.
     /// </summary>

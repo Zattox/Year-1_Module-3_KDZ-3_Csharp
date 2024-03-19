@@ -13,6 +13,7 @@ public class TelegramBotHelper
     {
         this.token = token;
     }
+
     /// <summary>
     /// Скачивание данных от пользователя.
     /// </summary>
@@ -45,6 +46,7 @@ public class TelegramBotHelper
 
         Methods.WriteStopLog(nameof(DownloadData));
     }
+
     /// <summary>
     /// Сохранение последних отредактированных данных. 
     /// </summary>
@@ -53,6 +55,7 @@ public class TelegramBotHelper
     private async Task CompleteEditingTask(Update update, List<GeraldicSign> editedTable)
     {
         Methods.WriteStartLog(nameof(CompleteEditingTask));
+
         if (editedTable.Count == 2)
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, UnluckyMessage, replyMarkup: Buttons.GetMenuButtons());
@@ -63,8 +66,10 @@ public class TelegramBotHelper
             lastJsonUpload = JSONProcessing.Write(editedTable);
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, SuccessfulSaveMessage, replyMarkup: Buttons.GetMenuButtons());
         }
+
         Methods.WriteStopLog(nameof(CompleteEditingTask));
     }
+
     /// <summary>
     /// Обработка сообщений пользователя.
     /// </summary>
@@ -72,6 +77,7 @@ public class TelegramBotHelper
     private async void ProcessUpdateAsync(Update update)
     {
         Methods.WriteStartLog(nameof(ProcessUpdateAsync));
+
         if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
         {
             var command = update.Message.Text;
@@ -185,8 +191,10 @@ public class TelegramBotHelper
         {
             await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
         }
+
         Methods.WriteStopLog(nameof(ProcessUpdateAsync));
     }
+
     /// <summary>
     /// Обновление сообщений от пользователя.
     /// </summary>

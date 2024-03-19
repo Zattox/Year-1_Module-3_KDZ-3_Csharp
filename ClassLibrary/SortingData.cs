@@ -32,6 +32,7 @@
             strSecondNumber = "0";
         secondNumber = int.Parse(strSecondNumber);
     }
+
     /// <summary>
     /// Собственный компаратор для сортировки List<GeraldicSign>.
     /// </summary>
@@ -77,14 +78,14 @@
     public static List<GeraldicSign> SortByRegistrationNumber(List<GeraldicSign> data, bool flag = false)
     {
         Methods.WriteStartLog(nameof(SortByRegistrationNumber));
+
         List<GeraldicSign> sortedData = new List<GeraldicSign>(data);
 
         // Убираем заголовки из таблицы.
         sortedData.Remove(data[0]);
         sortedData.Remove(data[1]);
-
+         
         sortedData.Sort(Comparator);
-
         if (flag)
             sortedData.Reverse();
 

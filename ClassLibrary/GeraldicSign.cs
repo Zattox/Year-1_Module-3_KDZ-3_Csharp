@@ -27,6 +27,7 @@ public class GeraldicSign
         this.registrationNumber = registrationNumber;
         this.global_id = global_id;
     }
+
     public GeraldicSign(List<string> data)
     {
         name = data[0];
@@ -66,10 +67,12 @@ public class GeraldicSign
 
     [JsonPropertyName("global_id")]
     public string Global_id => global_id;
+
     public string ToJson()
     {
         return JsonSerializer.Serialize(this);
     }
+
     public override string ToString()
     {
         string result = $"\"{name}\";" + $"\"{type}\";" + $"\"{picture}\";" + $"\"{description}\";"

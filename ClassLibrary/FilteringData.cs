@@ -14,6 +14,7 @@
         condition = result[0];
         value = result[1];
     }
+
     /// <summary>
     /// Выборка по одному условию.
     /// </summary>
@@ -23,8 +24,11 @@
     public static List<GeraldicSign> FilterByOneCondition(List<GeraldicSign> table, string message)
     {
         Methods.WriteStartLog(nameof(FilterByOneCondition));
-        FindValueFiterOneCondition(message, out string condition, out string value);
+
         List<GeraldicSign> result = new List<GeraldicSign>(table);
+        FindValueFiterOneCondition(message, out string condition, out string value);
+        
+        // Убираем заголовки из таблицы.
         result.Remove(table[0]);
         result.Remove(table[1]);
 
@@ -37,12 +41,14 @@
             result = result.Where(row => row.RegistrationDate == value).ToList();
         }
 
+        // Возвращаем заголовки в таблицу.
         result.Insert(0, table[1]);
         result.Insert(0, table[0]);
 
         Methods.WriteStopLog(nameof(FilterByOneCondition));
         return result;
     }
+
     /// <summary>
     /// Разделение строки по заданному формату.
     /// </summary>
@@ -57,6 +63,7 @@
         value1 = result[0];
         value2 = result[1];
     }
+
     /// <summary>
     /// Выборка по двум условиям.
     /// </summary>
@@ -66,9 +73,9 @@
     public static List<GeraldicSign> FilterByTwoConditions(List<GeraldicSign> table, string message)
     {
         Methods.WriteStartLog(nameof(FilterByTwoConditions));
-        FindValueFiterTwoCondition(message, AppConstants.FilterButtonText3, out string value1, out string value2);
 
         List<GeraldicSign> result = new List<GeraldicSign>(table);
+        FindValueFiterTwoCondition(message, AppConstants.FilterButtonText3, out string value1, out string value2);
 
         // Убираем заголовки из таблицы.
         result.Remove(table[0]);

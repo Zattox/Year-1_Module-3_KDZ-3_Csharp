@@ -32,6 +32,7 @@ public class JSONProcessing
         Methods.WriteStopLog(nameof(Read));
         return table;
     }
+
     /// <summary>
     /// Запись данных из таблицы в JSON файл.
     /// </summary>
@@ -63,6 +64,7 @@ public class JSONProcessing
         Methods.WriteStopLog(nameof(Write));
         return new FileStream(destinationFilePath, FileMode.Open);
     }
+
     /// <summary>
     /// Скачивание JSON файла из телеграмм чата с ботом.
     /// </summary>
@@ -83,6 +85,7 @@ public class JSONProcessing
         Methods.WriteStopLog(nameof(Download));
         return new FileStream(destinationFilePath, FileMode.Open);
     }
+
     /// <summary>
     /// Отправка JSON файла в телеграмм чат с ботом.
     /// </summary>

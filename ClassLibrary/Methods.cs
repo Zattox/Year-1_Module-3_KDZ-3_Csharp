@@ -30,6 +30,7 @@ public class Methods
             logger = loggerFactory.CreateLogger<Methods>();
         }
     }
+
     /// <summary>
     /// Создания нужных директрорий для работы программы. Поиск абсолютных путей до них.
     /// </summary>
@@ -88,6 +89,7 @@ public class Methods
             logFileWriter.WriteLine(text);
         }
     }
+
     /// <summary>
     /// Запись отметки о конце работы метода.
     /// </summary>
@@ -101,6 +103,7 @@ public class Methods
             logFileWriter.WriteLine(text);
         }
     }
+
     /// <summary>
     /// Запись отметки об ошибке в программе.
     /// </summary>
