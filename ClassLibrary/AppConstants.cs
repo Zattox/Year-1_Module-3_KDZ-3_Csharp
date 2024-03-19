@@ -1,8 +1,16 @@
-﻿public class AppConstants
+﻿using System.Net.NetworkInformation;
+
+public class AppConstants
 {
     public const int CountOfHeaders = 9;
     public const string Token = "6757896301:AAGpTPCVQBwt0dkJN5wYG4MD3dCmmUJWGyg";
     public const string Separator = "\";\"";
+
+    public static string ExecutablePath = string.Empty;
+    public static string OutputJSONPath = "";
+    public static string OutputCSVPath = "";
+    public static string DataPath = "";
+    public static string LogPath = "";
 
     public const string MenuButtonText1 = "Загрузить новый файл";
     public const string MenuButtonText2 = "Выборка";
