@@ -35,6 +35,7 @@ public class AppConstants
     public const string ChooseCommandMessage = "Выберите следующее действие ";
     public const string SuccessfulSaveMessage = "Данные успешно обработаны и локально сохранены! ";
     public const string UnluckyMessage = "По данному запросу не нашлось результатов (」°ロ°)」 ";
+    public const string EnvalidFormat = "Вы ввели запрос в неправильном формате!";
     public const string ChooseFilterMessage = "Введите запрос в одном из следующих форматов:\n\n" +
                                           $"{FilterButtonText1} \"значение поля\"\n\n" +
                                           $"{FilterButtonText2} \"значение поля\"\n\n" +

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using static AppConstants;
 public class TelegramBotHelper
@@ -80,112 +79,127 @@ public class TelegramBotHelper
     {
         Methods.WriteStartLog(nameof(ProcessUpdateAsync));
 
-        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+        try
         {
-            var command = update.Message.Text;
-            if (table is null) // Поведение программы, если пользователь еще не загрузил таблицу с данными.
+            if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
-                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
+                var command = update.Message.Text;
+                if (table is null) // Поведение программы, если пользователь еще не загрузил таблицу с данными.
+                {
+                    if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document)
+                    {
+                        try
+                        {
+                            await DownloadData(update);
+                        }
+                        catch (Exception ex)
+                        {
+                            Methods.WriteErrorLog(nameof(ProcessUpdateAsync), ex);
+                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ErrorMessage + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, StoppedMessage);
+                    }
+                }
+                else // Поведение программы, если пользователь загрузил таблицу с данными.
                 {
                     try
                     {
-                        await DownloadData(update);
+                        if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document) // Если сообщение - документ.
+                        {
+                            await DownloadData(update);
+                            return;
+                        }
+
+                        // Если пользователь хочет произвести выборку, ему необходимо в нужном формате прислать запрос.
+                        if (command.StartsWith(FilterButtonText1) || command.StartsWith(FilterButtonText2))
+                        {
+                            List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
+                            await CompleteEditingTask(update, editedTable);
+                            return;
+                        }
+                        else if (command.StartsWith(FilterButtonText3))
+                        {
+                            List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command);
+                            await CompleteEditingTask(update, editedTable);
+                            return;
+                        }
                     }
                     catch (Exception ex)
                     {
                         Methods.WriteErrorLog(nameof(ProcessUpdateAsync), ex);
-                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, ErrorMessage + ex.Message);
+                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, EnvalidFormat);
+                        return;
+                    }
+
+                    // Основное меню команд, если в таблице есть данные.
+                    switch (command)
+                    {
+                        case MenuButtonText1:
+                            {
+                                await botClient.SendTextMessageAsync(update.Message.Chat.Id, InputMessage, replyMarkup: Buttons.GetMenuButtons());
+                                break;
+                            }
+
+                        case MenuButtonText2:
+                            {
+                                await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseFilterMessage);
+                                break;
+                            }
+
+                        case MenuButtonText3:
+                            {
+                                await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetSortingButtons());
+                                break;
+                            }
+
+                        case MenuButtonText4:
+                            {
+                                await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetOutputButtons());
+                                break;
+                            }
+
+                        case SortingButtonText1:
+                            {
+                                List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
+                                await CompleteEditingTask(update, editedTable);
+                                break;
+                            }
+
+                        case SortingButtonText2:
+                            {
+                                List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table, true);
+                                await CompleteEditingTask(update, editedTable);
+                                break;
+                            }
+
+                        case OutputButtonText1:
+                            {
+                                await JSONProcessing.Upload(botClient, update, lastJsonUpload);
+                                break;
+                            }
+
+                        case OutputButtonText2:
+                            {
+                                await CSVProcessing.Upload(botClient, update, lastCsvUpload);
+                                break;
+                            }
+
+                        default:
+                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, CommandErrorMessage, replyMarkup: Buttons.GetMenuButtons());
+                            break;
                     }
                 }
-                else
-                {
-                    await botClient.SendTextMessageAsync(update.Message.Chat.Id, StoppedMessage);
-                }
             }
-            else // Поведение программы, если пользователь загрузил таблицу с данными.
+            else
             {
-                if (update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Document) // Если сообщение - документ.
-                {
-                    await DownloadData(update);
-                    return;
-                }
-
-                // Если пользователь хочет произвести выборку, ему необходимо в нужном формате прислать запрос.
-                if (command.StartsWith(FilterButtonText1) || command.StartsWith(FilterButtonText2))
-                {
-                    List<GeraldicSign> editedTable = FilteringData.FilterByOneCondition(table, command);
-                    await CompleteEditingTask(update, editedTable);
-                    return;
-                }
-                else if (command.StartsWith(FilterButtonText3))
-                {
-                    List<GeraldicSign> editedTable = FilteringData.FilterByTwoConditions(table, command);
-                    await CompleteEditingTask(update, editedTable);
-                    return;
-                }
-
-                // Основное меню команд, если в таблице есть данные.
-                switch (command)
-                {
-                    case MenuButtonText1:
-                        {
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, InputMessage, replyMarkup: Buttons.GetMenuButtons());
-                            break;
-                        }
-
-                    case MenuButtonText2:
-                        {
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseFilterMessage);
-                            break;
-                        }
-
-                    case MenuButtonText3:
-                        {
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetSortingButtons());
-                            break;
-                        }
-
-                    case MenuButtonText4:
-                        {
-                            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ChooseCommandMessage, replyMarkup: Buttons.GetOutputButtons());
-                            break;
-                        }
-
-                    case SortingButtonText1:
-                        {
-                            List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table);
-                            await CompleteEditingTask(update, editedTable);
-                            break;
-                        }
-
-                    case SortingButtonText2:
-                        {
-                            List<GeraldicSign> editedTable = SortingData.SortByRegistrationNumber(table, true);
-                            await CompleteEditingTask(update, editedTable);
-                            break;
-                        }
-
-                    case OutputButtonText1:
-                        {
-                            await JSONProcessing.Upload(botClient, update, lastJsonUpload);
-                            break;
-                        }
-
-                    case OutputButtonText2:
-                        {
-                            await CSVProcessing.Upload(botClient, update, lastCsvUpload);
-                            break;
-                        }
-
-                    default:
-                        await botClient.SendTextMessageAsync(update.Message.Chat.Id, CommandErrorMessage, replyMarkup: Buttons.GetMenuButtons());
-                        break;
-                }
+                await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
             }
-        }
-        else
-        {
-            await botClient.SendTextMessageAsync(update.Message.Chat.Id, TypeErrorMessage);
+        } catch (Exception ex) {
+            Methods.WriteErrorLog(nameof(ProcessUpdateAsync), ex);
+            await botClient.SendTextMessageAsync(update.Message.Chat.Id, ErrorMessage + ex.Message);
         }
 
         Methods.WriteStopLog(nameof(ProcessUpdateAsync));

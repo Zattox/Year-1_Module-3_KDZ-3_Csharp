@@ -12,7 +12,7 @@
         string[] arr = message.Remove(0, text.Length).Split('\"');
         var result = arr.Where(x => x.Length > 1).ToList();
         condition = result[0];
-        value = result[1];
+        value = result[1];   
     }
 
     /// <summary>
